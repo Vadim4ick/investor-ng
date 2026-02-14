@@ -1,14 +1,16 @@
 {
   "home": {
-    "heroTitle": "Find out whether you'll be a millionaire by 40 <span class=\"text-green-400\">or in endless debt</span>"
+    "heroTitle": "Find out whether you'll be a millionaire by 40 <span class=\"text-green-400\">or in endless debt</span>",
+    "heroDesc": "An interactive financial life simulator. Rewind your life for 20 years and discover where your decisions will lead.",
+    "getStarted": "Get started for free"
   },
 
   "seo": {
     "home": {
-      "title": "testx",
-      "description": "Интерактивный симулятор финансовой грамотности. Узнай, сколько капитала ты накопишь за 20 лет.",
-      "ogTitle": "Симулятор инвестора",
-      "ogDescription": "Запусти симуляцию жизни на 20 лет и узнай свой капитал."
+      "title": "Investor Simulator - Find out if you'll have capital by 40",
+      "description": "An interactive financial literacy simulator. Find out how much capital you can accumulate in 20 years. Find out if you'll have enough money by 40.",
+      "ogTitle": "Investor simulator",
+      "ogDescription": "Run a 20-year life simulation and find out your net worth."
     }
   }
 }
