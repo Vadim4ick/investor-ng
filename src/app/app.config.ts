@@ -3,43 +3,44 @@ import {
   ApplicationConfig,
   inject,
   provideBrowserGlobalErrorListeners,
+  PLATFORM_ID,
   REQUEST,
 } from '@angular/core';
-import { provideRouter, Router } from '@angular/router';
-
-import { routes } from './app.routes';
+import { isPlatformServer } from '@angular/common';
+import { provideRouter } from '@angular/router';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
+import { provideHttpClient, withFetch } from '@angular/common/http';
 import {
   provideTranslateLoader,
   provideTranslateService,
   TranslateService,
 } from '@ngx-translate/core';
-import { provideHttpClient, withFetch } from '@angular/common/http';
-import { UniversalTranslateLoader } from './i18n/universal-translate.loader';
 import { firstValueFrom } from 'rxjs';
 
-function extractLangFromPath(pathname: string | undefined): 'ru' | 'en' {
-  if (!pathname) return 'ru';
-  const first = pathname.split('/').filter(Boolean)[0]?.toLowerCase();
+import { routes } from './app.routes';
+import { UniversalTranslateLoader } from './i18n/universal-translate.loader';
+
+function extractLang(path?: string): 'ru' | 'en' {
+  const first = (path || '').split('/').filter(Boolean)[0]?.toLowerCase();
   return first === 'en' ? 'en' : 'ru';
 }
 
-function initLocaleFromUrl() {
+function initLocale() {
   const t = inject(TranslateService);
-  const req = inject(REQUEST, { optional: true }); // есть только на SSR
+  const req = inject(REQUEST, { optional: true });
+  const platformId = inject(PLATFORM_ID);
 
   return async () => {
     t.addLangs(['ru', 'en']);
     t.setDefaultLang('ru');
 
-    // SSR -> REQUEST.url, Browser -> location.pathname
-    const pathname = req?.url ?? (typeof window !== 'undefined' ? window.location.pathname : '/ru');
+    const path = isPlatformServer(platformId) ? (req?.url ?? '/ru') : window.location.pathname;
 
-    const lang = extractLangFromPath(pathname);
+    const lang = extractLang(path);
 
     await firstValueFrom(t.use(lang));
 
-    if (typeof document !== 'undefined') {
+    if (!isPlatformServer(platformId)) {
       document.documentElement.lang = lang;
     }
   };
@@ -54,11 +55,11 @@ export const appConfig: ApplicationConfig = {
     provideTranslateService({
       loader: provideTranslateLoader(UniversalTranslateLoader),
       fallbackLang: 'ru',
-      lang: 'ru',
+      // ВАЖНО: не ставим lang: 'ru'
     }),
     {
       provide: APP_INITIALIZER,
-      useFactory: initLocaleFromUrl,
+      useFactory: initLocale,
       multi: true,
     },
   ],
