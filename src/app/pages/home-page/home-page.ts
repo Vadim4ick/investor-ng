@@ -3,12 +3,13 @@ import { Meta, Title } from '@angular/platform-browser';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { LangSwitcherComponent } from '@/components/lang-switcher/lang-switcher';
 import { AppContainerComponent } from '@/shared/layouts/app-container';
+import { ThemeToggleComponent } from '@/components/theme-switcher/theme-switcher';
 
 @Component({
   selector: 'home-page',
   standalone: true,
   templateUrl: './home-page.html',
-  imports: [LangSwitcherComponent, TranslatePipe, AppContainerComponent],
+  imports: [LangSwitcherComponent, TranslatePipe, AppContainerComponent, ThemeToggleComponent],
 })
 export class HomePage {
   private title = inject(Title);
