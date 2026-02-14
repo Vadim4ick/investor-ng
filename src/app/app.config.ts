@@ -55,7 +55,6 @@ export const appConfig: ApplicationConfig = {
     provideTranslateService({
       loader: provideTranslateLoader(UniversalTranslateLoader),
       fallbackLang: 'ru',
-      // ВАЖНО: не ставим lang: 'ru'
     }),
     {
       provide: APP_INITIALIZER,
