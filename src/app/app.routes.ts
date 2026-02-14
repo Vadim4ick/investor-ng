@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 import { HomePage } from './pages/home-page/home-page';
-import { langGuard } from './core/i18n/lang.guard';
+import { langGuard } from './shared/core/i18n/lang.guard';
 
 export const routes: Routes = [
   // редирект с корня на ru (можно сменить на en)

@@ -1,5 +1,5 @@
+import { AppLang, LocaleService } from '@/shared/core/locale.service';
 import { Component, inject } from '@angular/core';
-import { LocaleService, AppLang } from '../../core/locale.service';
 
 @Component({
   selector: 'lang-switcher',

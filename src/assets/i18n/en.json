@@ -2,7 +2,49 @@
   "home": {
     "heroTitle": "Find out whether you'll be a millionaire by 40 <span class=\"text-green-400\">or in endless debt</span>",
     "heroDesc": "An interactive financial life simulator. Rewind your life for 20 years and discover where your decisions will lead.",
-    "getStarted": "Get started for free"
+    "getStarted": "Get started for free",
+
+    "howItWorks": {
+      "title": "How it works",
+
+      "blocks": [
+        {
+          "title": "Enter your salary and expenses",
+          "desc": "Configure real-life financial parameters"
+        },
+        {
+          "title": "Run a 20-year simulation",
+          "desc": "See how your capital grows"
+        },
+        {
+          "title": "Get a personalized plan",
+          "desc": "Learn how to reach financial freedom"
+        }
+      ]
+    },
+
+    "helpedOthers": {
+      "title": "Already helped others",
+      "blocks": [
+        {
+          "title": "Igor, 28 years old",
+          "desc": "I understood why to invest - +3.2 million capital in 15 years"
+        },
+        {
+          "title": "Anna, 25 years old",
+          "desc": "Started saving 20% and achieved passive income"
+        },
+        {
+          "title": "Maxim, 31 years old",
+          "desc": "Refused a car loan and accelerated capital growth"
+        }
+      ]
+    },
+
+    "CTA": {
+      "title": "Run your simulation now",
+      "btnTitle": "Start for free"
+    }
   },
 
   "seo": {

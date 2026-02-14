@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { LangSwitcherComponent } from '../../components/lang-switcher/lang-switcher';
+import { LangSwitcherComponent } from '@/components/lang-switcher/lang-switcher';
 
 @Component({
   selector: 'home-page',
