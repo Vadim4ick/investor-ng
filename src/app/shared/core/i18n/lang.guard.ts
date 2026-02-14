@@ -1,4 +1,3 @@
-// src/app/core/i18n/lang.guard.ts
 import { CanActivateFn, Router } from '@angular/router';
 import { inject } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';

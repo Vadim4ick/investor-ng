@@ -1,16 +1,13 @@
 import { Component, inject } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { TranslateService } from '@ngx-translate/core';
-import { LangSwitcherComponent } from '@/components/lang-switcher/lang-switcher';
-import { ThemeToggleComponent } from '@/components/theme-switcher/theme-switcher';
 import { Hero, HowWorks, HelpedBlock, Cta } from '@/modules/home-page';
-import { Footer } from '@/components/footer/footer';
 
 @Component({
   selector: 'home-page',
   standalone: true,
   templateUrl: './home-page.html',
-  imports: [LangSwitcherComponent, ThemeToggleComponent, Hero, HowWorks, HelpedBlock, Cta, Footer],
+  imports: [Hero, HowWorks, HelpedBlock, Cta],
 })
 export class HomePage {
   private title = inject(Title);
