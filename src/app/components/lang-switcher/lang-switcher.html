@@ -1,0 +1,12 @@
+<div class="flex gap-2">
+  @for (lang of langs; track lang) {
+    <button
+      type="button"
+      (click)="switchLang(lang)"
+      [class.font-bold]="current === lang"
+      class="px-3 py-1 border rounded"
+    >
+      {{ lang.toUpperCase() }}
+    </button>
+  }
+</div>
