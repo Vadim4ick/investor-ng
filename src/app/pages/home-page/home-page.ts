@@ -1,15 +1,16 @@
 import { Component, inject } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
-import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
 import { LangSwitcherComponent } from '@/components/lang-switcher/lang-switcher';
-import { AppContainerComponent } from '@/shared/layouts/app-container';
 import { ThemeToggleComponent } from '@/components/theme-switcher/theme-switcher';
+import { Hero, HowWorks, HelpedBlock, Cta } from '@/modules/home-page';
+import { Footer } from '@/components/footer/footer';
 
 @Component({
   selector: 'home-page',
   standalone: true,
   templateUrl: './home-page.html',
-  imports: [LangSwitcherComponent, TranslatePipe, AppContainerComponent, ThemeToggleComponent],
+  imports: [LangSwitcherComponent, ThemeToggleComponent, Hero, HowWorks, HelpedBlock, Cta, Footer],
 })
 export class HomePage {
   private title = inject(Title);
