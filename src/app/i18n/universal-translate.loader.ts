@@ -1,4 +1,3 @@
-// src/app/i18n/universal-translate.loader.ts
 import { inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformServer } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
@@ -11,12 +10,12 @@ export class UniversalTranslateLoader implements TranslateLoader {
 
   getTranslation(lang: string): Observable<TranslationObject> {
     if (isPlatformServer(this.platformId)) {
+      // SSR: читаем файл с диска
       return from(
         (async () => {
           const fs = await import('node:fs/promises');
           const path = await import('node:path');
 
-          // Для SSR/prerender обычно стабильнее читать из src/assets
           const filePath = path.join(process.cwd(), 'src', 'assets', 'i18n', `${lang}.json`);
           const content = await fs.readFile(filePath, 'utf-8');
           return JSON.parse(content) as TranslationObject;
@@ -24,7 +23,7 @@ export class UniversalTranslateLoader implements TranslateLoader {
       );
     }
 
-    // Браузер: через HttpClient (важно для Angular CD/zone)
+    // Browser: грузим из assets
     return this.http.get<TranslationObject>(`assets/i18n/${lang}.json`);
   }
 }

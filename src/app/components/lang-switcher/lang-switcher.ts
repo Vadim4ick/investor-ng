@@ -10,10 +10,12 @@ export class LangSwitcherComponent {
   private locale = inject(LocaleService);
 
   langs = this.locale.getSupported();
-  current = this.locale.getCurrentLang();
 
-  switchLang(lang: AppLang) {
-    this.locale.setLang(lang);
-    this.current = lang;
+  get current(): AppLang {
+    return this.locale.getCurrentLangFromUrl();
+  }
+
+  async switchLang(lang: AppLang) {
+    await this.locale.setLang(lang);
   }
 }
