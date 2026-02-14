@@ -1,42 +1,36 @@
 import { Component, inject } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
-import { RouterLink } from '@angular/router';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { LangSwitcherComponent } from '../../components/lang-switcher/lang-switcher';
 
 @Component({
   selector: 'home-page',
-  imports: [RouterLink, TranslatePipe, LangSwitcherComponent],
+  standalone: true,
   templateUrl: './home-page.html',
-  styleUrl: './home-page.css',
+  imports: [LangSwitcherComponent, TranslatePipe],
 })
 export class HomePage {
   private title = inject(Title);
   private meta = inject(Meta);
-
   private t = inject(TranslateService);
 
-  constructor() {
-    this.title.setTitle('Симулятор инвестора — узнай, выйдешь ли на капитал к 40');
+  ngOnInit() {
+    this.applySeo();
+    this.t.onLangChange.subscribe(() => this.applySeo());
+  }
 
-    this.meta.addTags([
-      {
-        name: 'description',
-        content:
-          'Интерактивный симулятор финансовой грамотности. Узнай, сколько капитала ты накопишь за 20 лет.',
-      },
-      {
-        property: 'og:title',
-        content: 'Симулятор инвестора',
-      },
-      {
-        property: 'og:description',
-        content: 'Запусти симуляцию жизни на 20 лет и узнай свой капитал.',
-      },
-    ]);
+  private applySeo() {
+    const pageTitle = this.t.instant('seo.home.title');
+    const pageDesc = this.t.instant('seo.home.description');
+    const ogTitle = this.t.instant('seo.home.ogTitle');
+    const ogDesc = this.t.instant('seo.home.ogDescription');
 
-    this.t.addLangs(['ru', 'en']);
-    this.t.setDefaultLang('ru');
-    this.t.use('ru');
+    this.title.setTitle(pageTitle);
+    this.meta.updateTag({ name: 'description', content: pageDesc });
+    this.meta.updateTag({ property: 'og:title', content: ogTitle });
+    this.meta.updateTag({ property: 'og:description', content: ogDesc });
+
+    const lang = this.t.currentLang === 'en' ? 'en_US' : 'ru_RU';
+    this.meta.updateTag({ property: 'og:locale', content: lang });
   }
 }

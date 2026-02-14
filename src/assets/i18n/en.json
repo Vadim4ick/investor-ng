@@ -1,5 +1,14 @@
 {
   "home": {
     "heroTitle": "Find out whether you'll be a millionaire by 40 <span class=\"text-green-400\">or in endless debt</span>"
+  },
+
+  "seo": {
+    "home": {
+      "title": "testx",
+      "description": "Интерактивный симулятор финансовой грамотности. Узнай, сколько капитала ты накопишь за 20 лет.",
+      "ogTitle": "Симулятор инвестора",
+      "ogDescription": "Запусти симуляцию жизни на 20 лет и узнай свой капитал."
+    }
   }
 }

@@ -13,7 +13,7 @@ import {
   provideTranslateService,
   TranslateService,
 } from '@ngx-translate/core';
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withFetch } from '@angular/common/http';
 import { UniversalTranslateLoader } from './i18n/universal-translate.loader';
 import { LocaleService } from './core/locale.service';
 import { firstValueFrom } from 'rxjs';
@@ -23,8 +23,8 @@ function initLocale() {
   const t = inject(TranslateService);
 
   return async () => {
-    const lang = locale.init();
-    await firstValueFrom(t.use(lang)); // дожидаемся загрузки перевода
+    const lang = locale.init(); // только вычисляет язык
+    await firstValueFrom(t.use(lang)); // единственный use()
   };
 }
 export const appConfig: ApplicationConfig = {
@@ -32,7 +32,7 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
     provideClientHydration(withEventReplay()),
-    provideHttpClient(),
+    provideHttpClient(withFetch()),
     provideTranslateService({
       loader: provideTranslateLoader(UniversalTranslateLoader),
       fallbackLang: 'ru',

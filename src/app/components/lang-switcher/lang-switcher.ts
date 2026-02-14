@@ -14,6 +14,6 @@ export class LangSwitcherComponent {
 
   switchLang(lang: AppLang) {
     this.locale.setLang(lang);
-    this.current = this.locale.getCurrentLang();
+    this.current = lang;
   }
 }
