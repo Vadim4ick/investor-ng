@@ -1,0 +1,105 @@
+<!-- Заголовок и описание -->
+<section class="pt-24 pb-20 bg-linear-to-b from-background to-muted/40">
+  <app-container>
+    <h1 class="text-5xl md:text-6xl font-bold leading-tight mb-6">
+      Симулятор финансовой грамотности
+    </h1>
+    <p class="text-xl mb-10 max-w-2xl">
+      Запусти свою жизнь на 20 лет и узнай, как твои финансы могут измениться через накопления и
+      инвестиции.
+    </p>
+  </app-container>
+</section>
+
+<!-- Сценарии -->
+<section class="py-16">
+  <app-container>
+    <div class="tabs-container mb-8">
+      <div class="tab" [class.active]="selectedTab === 'paycheck'" (click)="selectTab('paycheck')">
+        От получки
+      </div>
+      <div class="tab" [class.active]="selectedTab === 'saver'" (click)="selectTab('saver')">
+        Накопитель
+      </div>
+      <div class="tab" [class.active]="selectedTab === 'investor'" (click)="selectTab('investor')">
+        Инвестор
+      </div>
+    </div>
+    <div class="tab-content">
+      <!-- Слайдеры для данных (ЗП, траты и т.д.) -->
+      <!-- <div class="sliders">
+        <slider
+          label="ЗП"
+          [(value)]="salary"
+          [min]="50000"
+          [max]="300000"
+          [step]="5000"
+          [defaultValue]="100000"
+        ></slider>
+        <slider
+          label="Траты на еду/кафе"
+          [(value)]="expenses.food"
+          [min]="10000"
+          [max]="50000"
+          [step]="1000"
+          [defaultValue]="20000"
+        ></slider>
+      </div> -->
+    </div>
+  </app-container>
+</section>
+
+<!-- Прогресс симуляции -->
+<!-- <section class="py-16">
+  <app-container>
+    <button class="start-simulation-btn" (click)="startSimulation()">Прожить 20 лет</button>
+    <progress-bar [progress]="simulationProgress"></progress-bar>
+  </app-container>
+</section> -->
+
+<!-- Графики и результаты -->
+<section class="py-16">
+  <app-container>
+    <div class="results-container">
+      <h2 class="text-3xl font-semibold mb-6">Результаты симуляции</h2>
+
+      <!-- График капитала -->
+      <!-- <line-chart [data]="capitalData"></line-chart> -->
+
+      <!-- Cashflow доска -->
+      <!-- <cashflow-board [currentPosition]="currentPosition"></cashflow-board> -->
+
+      <!-- Ключевые метрики -->
+      <!-- <div class="key-metrics">
+        <metric-card
+          label="Капитал к 40 годам"
+          [value]="capitalAt40"
+          [isPositive]="capitalAt40 > 1000000"
+        ></metric-card>
+        <metric-card label="Долги" [value]="debts" [isPositive]="debts < 0"></metric-card>
+        <metric-card label="Пассивный доход/мес" [value]="passiveIncome"></metric-card>
+      </div> -->
+    </div>
+  </app-container>
+</section>
+
+<!-- Блог -->
+<!-- <section class="py-16 bg-background">
+  <app-container>
+    <div class="carousel">
+      <div class="carousel-item" *ngFor="let article of articles">
+        <h4>{{ article.title }}</h4>
+        <p>{{ article.description }}</p>
+        <a routerLink="/article/{{ article.id }}" class="btn">Прочитать</a>
+      </div>
+    </div>
+  </app-container>
+</section> -->
+
+<!-- Премиум фичи -->
+<section class="py-16">
+  <app-container class="text-center">
+    <p>Хочешь кастомный план? Подпишись на премиум.</p>
+    <button class="premium-btn">Подписаться на премиум</button>
+  </app-container>
+</section>

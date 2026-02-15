@@ -7,11 +7,12 @@
 
     <p class="text-xl mb-10 max-w-2xl" [innerHTML]="'home.heroDesc' | translate"></p>
 
-    <a
-      routerLink="/simulator"
-      [innerHTML]="'home.getStarted' | translate"
-      class="inline-flex items-center justify-center bg-primary text-primary-foreground hover:opacity-90 font-semibold px-8 py-4 rounded-xl transition"
-    >
-    </a>
+    <app-link
+      [classList]="
+        'bg-primary text-primary-foreground hover:opacity-90 font-semibold px-8 py-4 rounded-xl'
+      "
+      [path]="'/simulator'"
+      [label]="'home.getStarted' | translate"
+    ></app-link>
   </app-container>
 </section>
