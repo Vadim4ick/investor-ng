@@ -1,16 +1,15 @@
 <div class="fixed top-6 right-6 z-50">
   <div
-    class="inline-flex rounded-lg border border-neutral-700 bg-neutral-900 p-1 shadow-lg backdrop-blur"
+    class="inline-flex rounded-lg border gap-1 border-border bg-card p-1 shadow-lg backdrop-blur"
   >
     @for (lang of langs; track lang) {
       <button
         type="button"
         (click)="switchLang(lang)"
-        class="px-4 py-1.5 text-sm font-medium rounded-md transition-all cursor-pointer"
+        class="px-4 py-1.5 text-sm font-medium rounded-md transition-all cursor-pointer hover:bg-accent dark:hover:text-white hover:text-black"
         [class.bg-white]="current === lang"
         [class.text-black]="current === lang"
         [class.text-neutral-400]="current !== lang"
-        [class.hover:text-white]="current !== lang"
       >
         {{ lang.toUpperCase() }}
       </button>
