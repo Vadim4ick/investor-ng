@@ -1,7 +1,7 @@
-import { Component, Input, OnInit, inject } from '@angular/core';
-import { LocaleService } from '@/services/locale.service';
+import { Component, Input, OnInit, effect, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive } from '@angular/router';
+import { LocaleService } from '@/services/locale.service';
 
 @Component({
   selector: 'app-link',
@@ -9,7 +9,7 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
   imports: [RouterLink, RouterLinkActive, CommonModule],
   template: `
     <a
-      [routerLink]="[linkPrefix, path]"
+      [routerLink]="routerLink()"
       [routerLinkActive]="activeClass"
       [routerLinkActiveOptions]="activeOptions"
       [ngClass]="classList"
@@ -22,19 +22,27 @@ export class AppLinkComponent implements OnInit {
   @Input() path = '';
   @Input() label = '';
   @Input() classList = '';
-
-  // новые инпуты
   @Input() activeClass: string | string[] = '';
   @Input() activeOptions: { exact: boolean } = { exact: false };
 
   private localeService = inject(LocaleService);
-  linkPrefix = '';
+
+  private lang = 'ru'; // локальная строка для линка
+
+  constructor() {
+    effect(() => {
+      this.lang = this.localeService.lang();
+    });
+  }
 
   ngOnInit(): void {
-    this.linkPrefix = `/${this.localeService.getCurrentLangFromUrl()}`;
-
     if (this.path.startsWith('/')) {
       this.path = this.path.substring(1);
     }
+  }
+
+  routerLink() {
+    // если path пустой — просто /:lang
+    return this.path ? ['/', this.lang, this.path] : ['/', this.lang];
   }
 }

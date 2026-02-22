@@ -1,5 +1,6 @@
-import { Injectable, inject } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Injectable, inject, signal } from '@angular/core';
+import { Router, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
 
 export type AppLang = 'ru' | 'en';
@@ -8,9 +9,18 @@ export type AppLang = 'ru' | 'en';
 export class LocaleService {
   private t = inject(TranslateService);
   private router = inject(Router);
-  private route = inject(ActivatedRoute);
 
   private readonly supported: AppLang[] = ['ru', 'en'];
+
+  lang = signal<AppLang>(this.getCurrentLangFromUrl());
+
+  constructor() {
+    this.router.events
+      .pipe(filter((e): e is NavigationEnd => e instanceof NavigationEnd))
+      .subscribe(() => {
+        this.lang.set(this.getCurrentLangFromUrl());
+      });
+  }
 
   getSupported(): AppLang[] {
     return this.supported;
@@ -22,21 +32,22 @@ export class LocaleService {
   }
 
   async setLang(lang: AppLang): Promise<void> {
-    // 1) переключаем translate
     this.t.use(lang);
 
-    // 2) меняем только первый сегмент URL
     const segments = this.router.url.split('/').filter(Boolean);
     if (segments.length === 0) {
       await this.router.navigate(['/', lang]);
       return;
     }
 
-    segments[0] = lang; // заменяем :lang
+    segments[0] = lang;
     await this.router.navigate(['/', ...segments], { replaceUrl: true });
 
     if (typeof document !== 'undefined') {
       document.documentElement.lang = lang;
     }
+
+    // опционально: можно сразу обновить signal, не дожидаясь NavigationEnd
+    this.lang.set(lang);
   }
 }
