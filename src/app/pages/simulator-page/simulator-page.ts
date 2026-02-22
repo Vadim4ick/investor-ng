@@ -9,16 +9,17 @@ import { UbInputDirective } from '@/shared/ui/input';
 import { UbMoneyInputDirective } from '@/shared/ui/ub-money-input';
 import { AppContainerComponent } from '@/shared/layouts/app-container';
 import { TranslatePipe } from '@ngx-translate/core';
-import { UbTabItem, UbTabsComponent } from '@/shared/ui/tabs/tabs';
+import { UbTabsComponent } from '@/shared/ui/tabs/tabs';
 
 type SimulationResult = {
   capital: number;
   finalSalary: number;
   avgInvestPerMonth: number;
   avgSpendPerMonth: number;
+  inflation: number;
 };
 
-type TabId = 'live' | 'invest' | 'compound';
+type TabId = 'live' | 'invest';
 
 @Component({
   selector: 'app-simulator',
@@ -54,6 +55,8 @@ export class SimulatorPage {
   spendPercent = 80; // % от ЗП
 
   years = signal(20); // 1..100
+  inflation = signal(1); // 1..100
+
   result = signal<SimulationResult | null>(null);
 
   activeTab = signal<TabId>('live');
@@ -61,19 +64,18 @@ export class SimulatorPage {
   tabItems = [
     { id: 'live', label: 'ПРОЖИТЬ' },
     { id: 'invest', label: 'ИНВЕСТИРОВАТЬ' },
-    { id: 'compound', label: 'СЛОЖНЫЙ %' },
-  ];
+  ] as { id: TabId; label: string }[];
 
   setActiveTab(id: string) {
     this.activeTab.set(id as TabId);
   }
 
   salaryGrowthPercent() {
-    return ((this.salaryGrowth - 5) / (20 - 5)) * 100;
+    return ((this.salaryGrowth - 0) / (20 - 0)) * 100;
   }
 
   spendPercentPercent() {
-    const min = 50;
+    const min = 10;
     const max = 100;
     return ((this.spendPercent - min) / (max - min)) * 100;
   }
@@ -95,48 +97,63 @@ export class SimulatorPage {
     return 'лет';
   }
 
+  setInflation(value: number) {
+    const n = Number(value);
+    const clamped = Number.isFinite(n) ? Math.min(100, Math.max(1, Math.round(n))) : 1;
+    this.inflation.set(clamped);
+  }
+
   runSimulation() {
-    // мини-демо расчёт (заменишь на свою модель)
     const years = this.years();
     const startSalary = this.salary();
 
-    const growth = this.salaryGrowth / 100;
+    const salaryGrowth = this.salaryGrowth / 100; // номинальный рост ЗП
     const spendK = this.spendPercent / 100;
 
-    // допустим доходность инвестиций 8% годовых (пример)
-    const investReturn = 0.08;
+    const investReturn = 0.08; // номинальная доходность
+    const infl = this.inflation() / 100; // годовая инфляция
 
-    let salary = startSalary;
-    let capital = 0;
+    // Реальная доходность (Fisher)
+    const realReturn = (1 + investReturn) / (1 + infl) - 1;
 
-    let totalInvest = 0;
-    let totalSpend = 0;
+    let salaryNominal = startSalary; // номинальная зп по годам
+    let capitalReal = 0; // капитал в "деньгах сегодняшнего года"
+
+    let totalInvestReal = 0;
+    let totalSpendReal = 0;
 
     for (let y = 1; y <= years; y++) {
-      // годовая зарплата
-      const yearIncome = salary * 12;
+      const yearIncomeNominal = salaryNominal * 12;
+      const yearSpendNominal = yearIncomeNominal * spendK;
+      const yearInvestNominal = yearIncomeNominal - yearSpendNominal;
 
-      const yearSpend = yearIncome * spendK;
-      const yearInvest = yearIncome - yearSpend;
+      // Переводим потоки этого года в реальные деньги
+      const df = 1 / Math.pow(1 + infl, y);
+      const yearSpendReal = yearSpendNominal * df;
+      const yearInvestReal = yearInvestNominal * df;
 
-      // капитал растёт + пополнение
-      capital = capital * (1 + investReturn) + yearInvest;
+      // Капитал ведём в реальных деньгах
+      capitalReal = capitalReal * (1 + realReturn) + yearInvestReal;
 
-      totalInvest += yearInvest;
-      totalSpend += yearSpend;
+      totalInvestReal += yearInvestReal;
+      totalSpendReal += yearSpendReal;
 
-      // рост зп в конце года
-      salary = salary * (1 + growth);
+      // Номинальный рост зп в конце года
+      salaryNominal = salaryNominal * (1 + salaryGrowth);
     }
 
-    const avgInvestPerMonth = totalInvest / (years * 12);
-    const avgSpendPerMonth = totalSpend / (years * 12);
+    // Финальная зп тоже лучше показать в реальных деньгах (на конец горизонта, но в ценах "сегодня")
+    const salaryReal = salaryNominal / Math.pow(1 + infl, years);
+
+    const avgInvestPerMonthReal = totalInvestReal / (years * 12);
+    const avgSpendPerMonthReal = totalSpendReal / (years * 12);
 
     this.result.set({
-      capital: Math.round(capital),
-      finalSalary: Math.round(salary),
-      avgInvestPerMonth: Math.round(avgInvestPerMonth),
-      avgSpendPerMonth: Math.round(avgSpendPerMonth),
+      capital: Math.round(capitalReal),
+      finalSalary: Math.round(salaryReal),
+      avgInvestPerMonth: Math.round(avgInvestPerMonthReal),
+      avgSpendPerMonth: Math.round(avgSpendPerMonthReal),
+      inflation: this.inflation(),
     });
   }
 }

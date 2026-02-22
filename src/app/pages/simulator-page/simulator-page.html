@@ -26,8 +26,8 @@
           <div class="mt-6 rounded-2xl p-6 bg-card border border-border">
             <div class="text-lg font-semibold mb-2">Прожить</div>
             <div class="text-sm text-gray">
-              Тут покажешь форму/параметры про проживание (например: зарплата, траты, рост
-              зарплаты).
+              Опция для тех, кто хочет прожить сценарий своей жизни с разными параметрами (рост зп,
+              траты, годы) и посмотреть, что будет с капиталом.
             </div>
           </div>
         }
@@ -36,35 +36,67 @@
           <div class="mt-6 rounded-2xl p-6 bg-card border border-border">
             <div class="text-lg font-semibold mb-2">Инвестировать</div>
             <div class="text-sm text-gray">
-              Тут покажешь форму/параметры про инвестирование (например: доходность, взносы,
-              риск-профиль).
-            </div>
-          </div>
-        }
-
-        @case ('compound') {
-          <div class="mt-6 rounded-2xl p-6 bg-card border border-border">
-            <div class="text-lg font-semibold mb-2">Сложный процент</div>
-            <div class="text-sm text-gray">
-              Тут можешь вывести отдельную модель компаунда/график/табличку.
+              Опция для тех, кто хочет понять, как разные параметры инвестирования (доходность,
+              реинвестирование) влияют на итоговый капитал при прочих равных условиях.
             </div>
           </div>
         }
       }
 
-      <div class="grid md:grid-cols-4 gap-6 items-end">
-        <!-- ЗП -->
-        <div class="space-y-3">
-          <label [innerHTML]="'simulator.sectionsGenerate.zp' | translate"></label>
+      <div class="grid md:grid-cols-[1.5fr_1fr_1fr] gap-6 items-end">
+        <div class="flex items-center gap-4">
+          <!-- ЗП -->
+          <div class="space-y-3">
+            <label
+              class="whitespace-nowrap"
+              [innerHTML]="'simulator.sectionsGenerate.zp' | translate"
+            ></label>
 
-          <!-- ВАЖНО: signal нельзя биндинговать через [(ngModel)] напрямую -->
-          <input
-            ubInput
-            ubMoneyInput
-            type="text"
-            [ngModel]="salary()"
-            (ngModelChange)="salary.set($event)"
-          />
+            <!-- ВАЖНО: signal нельзя биндинговать через [(ngModel)] напрямую -->
+            <input
+              ubInput
+              ubMoneyInput
+              type="text"
+              [ngModel]="salary()"
+              (ngModelChange)="salary.set($event)"
+            />
+          </div>
+
+          <!-- Годы -->
+          <div class="space-y-3">
+            <label
+              class="text-sm font-medium whitespace-nowrap"
+              [innerHTML]="'simulator.sectionsGenerate.years' | translate"
+            ></label>
+
+            <input
+              type="text"
+              ubInput
+              ubMoneyInput
+              [min]="1"
+              [max]="99"
+              [ngModel]="years()"
+              (ngModelChange)="setYears($event)"
+            />
+          </div>
+
+          <!-- Инфляция -->
+          <div class="space-y-3">
+            <label
+              class="text-sm font-medium whitespace-nowrap"
+              [innerHTML]="'simulator.sectionsGenerate.inflation' | translate"
+            ></label>
+
+            <input
+              type="text"
+              ubInput
+              ubMoneyInput
+              [min]="1"
+              [max]="50"
+              [ngModel]="inflation()"
+              (ngModelChange)="setInflation($event)"
+            />
+          </div>
         </div>
 
         <!-- Рост ЗП -->
@@ -85,14 +117,14 @@
 
               <input
                 type="range"
-                min="5"
+                min="0"
                 max="20"
                 [(ngModel)]="salaryGrowth"
                 class="absolute top-0 left-0 w-full h-2 appearance-none bg-transparent cursor-pointer"
               />
             </div>
 
-            <span class="w-12 text-right font-semibold"> {{ salaryGrowth }}% </span>
+            <span class="text-right font-semibold"> {{ salaryGrowth }}% </span>
           </div>
         </div>
 
@@ -115,33 +147,15 @@
 
               <input
                 type="range"
-                min="50"
+                min="10"
                 max="100"
                 [(ngModel)]="spendPercent"
                 class="absolute top-0 left-0 w-full h-2 appearance-none bg-transparent cursor-pointer"
               />
             </div>
 
-            <span class="w-12 text-right font-semibold"> {{ spendPercent }}% </span>
+            <span class="text-right font-semibold"> {{ spendPercent }}% </span>
           </div>
-        </div>
-
-        <!-- Годы -->
-        <div class="space-y-3">
-          <label
-            class="text-sm font-medium"
-            [innerHTML]="'simulator.sectionsGenerate.years' | translate"
-          ></label>
-
-          <input
-            type="text"
-            ubInput
-            ubMoneyInput
-            [max]="100"
-            class="w-full"
-            [ngModel]="years()"
-            (ngModelChange)="setYears($event)"
-          />
         </div>
       </div>
 

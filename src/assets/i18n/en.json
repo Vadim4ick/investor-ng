@@ -58,7 +58,8 @@
       "zp": "Salary",
       "height": "Salary growth (%/year)",
       "spending": "Spending (% of salary)",
-      "years": "Years"
+      "years": "Years",
+      "inflation": "Inflation (%/year)"
     }
   },
 
