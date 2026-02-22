@@ -72,6 +72,14 @@ export class SimulatorCalculation {
     { initialValue: [] as { id: TabId; label: string }[] },
   );
 
+  constructor() {
+    effect(() => {
+      this.activeTab(); // зависимость
+
+      this.result.set(null); // сброс при любом изменении activeTab
+    });
+  }
+
   setActiveTab(id: string) {
     this.activeTab.set(id as TabId);
   }
