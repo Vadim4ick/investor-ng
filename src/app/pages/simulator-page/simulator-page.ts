@@ -8,6 +8,7 @@ import { UbButtonDirective } from '@/shared/ui/button';
 import { UbInputDirective } from '@/shared/ui/input';
 import { UbMoneyInputDirective } from '@/shared/ui/ub-money-input';
 import { AppContainerComponent } from '@/shared/layouts/app-container';
+import { TranslatePipe } from '@ngx-translate/core';
 
 type SimulationResult = {
   capital: number;
@@ -22,6 +23,7 @@ type SimulationResult = {
   imports: [
     CommonModule,
     FormsModule,
+    TranslatePipe,
     Hero,
     UbButtonDirective,
     UbInputDirective,

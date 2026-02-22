@@ -15,10 +15,6 @@ export const routes: Routes = [
     children: [
       { path: '', component: HomePage },
       { path: 'simulator', component: SimulatorPage },
-
-      // пример внутренних страниц
-      // { path: 'about', component: AboutPage },
-      // { path: 'pricing', component: PricingPage },
     ],
   },
 

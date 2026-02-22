@@ -47,6 +47,21 @@
     }
   },
 
+  "simulator": {
+    "hero": {
+      "title": "Financial Literacy Simulator",
+      "desc": "Set your life back 20 years and see how your finances can change through saving and investing.",
+      "btnText": "Go to"
+    },
+
+    "sectionsGenerate": {
+      "zp": "Salary",
+      "height": "Salary growth (%/year)",
+      "spending": "Spending (% of salary)",
+      "years": "Years"
+    }
+  },
+
   "seo": {
     "home": {
       "title": "Investor Simulator - Find out if you'll have capital by 40",

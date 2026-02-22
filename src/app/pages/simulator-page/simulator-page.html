@@ -1,14 +1,15 @@
 <!-- Заголовок и описание -->
 <app-hero>
-  <h1 class="text-5xl md:text-6xl font-bold leading-tight mb-6">
-    Симулятор финансовой грамотности
-  </h1>
-  <p class="text-xl mb-10 max-w-2xl">
-    Запусти свою жизнь на 20 лет и узнай, как твои финансы могут измениться через накопления и
-    инвестиции.
-  </p>
+  <h1
+    class="text-5xl md:text-6xl font-bold leading-tight mb-6"
+    [innerHTML]="'simulator.hero.title' | translate"
+  ></h1>
 
-  <button class="cursor-pointer" size="lg" ubButton>Перейти</button>
+  <p class="text-xl mb-10 max-w-2xl" [innerHTML]="'simulator.hero.desc' | translate"></p>
+
+  <button class="cursor-pointer" size="lg" ubButton>
+    {{ 'simulator.hero.btnText' | translate }}
+  </button>
 </app-hero>
 
 <div class="my-16">
@@ -17,7 +18,7 @@
       <div class="grid md:grid-cols-4 gap-6 items-end">
         <!-- ЗП -->
         <div class="space-y-3">
-          <label>ЗП (₽)</label>
+          <label [innerHTML]="'simulator.sectionsGenerate.zp' | translate"></label>
 
           <!-- ВАЖНО: signal нельзя биндинговать через [(ngModel)] напрямую -->
           <input
@@ -31,7 +32,10 @@
 
         <!-- Рост ЗП -->
         <div class="space-y-3 md:col-span-1">
-          <label class="text-sm font-medium"> Рост ЗП (%/год) </label>
+          <label
+            class="text-sm font-medium"
+            [innerHTML]="'simulator.sectionsGenerate.height' | translate"
+          ></label>
 
           <div class="flex items-center gap-4">
             <div class="relative flex-1">
@@ -57,7 +61,11 @@
 
         <!-- Траты -->
         <div class="space-y-3 md:col-span-1">
-          <label class="text-sm font-medium"> Траты (% от ЗП) </label>
+          <label
+            class="text-sm font-medium"
+            [innerHTML]="'simulator.sectionsGenerate.spending' | translate"
+          >
+          </label>
 
           <div class="flex items-center gap-4">
             <div class="relative flex-1">
@@ -83,7 +91,11 @@
 
         <!-- Годы -->
         <div class="space-y-3">
-          <label class="text-sm font-medium">Годы (1–100)</label>
+          <label
+            class="text-sm font-medium"
+            [innerHTML]="'simulator.sectionsGenerate.years' | translate"
+          ></label>
+
           <input
             type="text"
             ubInput
