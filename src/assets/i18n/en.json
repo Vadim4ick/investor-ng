@@ -82,6 +82,14 @@
     }
   },
 
+  "header": {
+    "login": "Authorization",
+    "navbar": {
+      "home": "Home",
+      "simulator": "Simulator"
+    }
+  },
+
   "seo": {
     "home": {
       "title": "Investor Simulator - Find out if you'll have capital by 40",
