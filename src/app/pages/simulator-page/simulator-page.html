@@ -15,6 +15,43 @@
 <div class="my-16">
   <app-container>
     <div class="space-y-4">
+      <ub-tabs
+        [items]="tabItems"
+        [active]="activeTab()"
+        (activeChange)="setActiveTab($event)"
+      ></ub-tabs>
+
+      @switch (activeTab()) {
+        @case ('live') {
+          <div class="mt-6 rounded-2xl p-6 bg-card border border-border">
+            <div class="text-lg font-semibold mb-2">Прожить</div>
+            <div class="text-sm text-gray">
+              Тут покажешь форму/параметры про проживание (например: зарплата, траты, рост
+              зарплаты).
+            </div>
+          </div>
+        }
+
+        @case ('invest') {
+          <div class="mt-6 rounded-2xl p-6 bg-card border border-border">
+            <div class="text-lg font-semibold mb-2">Инвестировать</div>
+            <div class="text-sm text-gray">
+              Тут покажешь форму/параметры про инвестирование (например: доходность, взносы,
+              риск-профиль).
+            </div>
+          </div>
+        }
+
+        @case ('compound') {
+          <div class="mt-6 rounded-2xl p-6 bg-card border border-border">
+            <div class="text-lg font-semibold mb-2">Сложный процент</div>
+            <div class="text-sm text-gray">
+              Тут можешь вывести отдельную модель компаунда/график/табличку.
+            </div>
+          </div>
+        }
+      }
+
       <div class="grid md:grid-cols-4 gap-6 items-end">
         <!-- ЗП -->
         <div class="space-y-3">

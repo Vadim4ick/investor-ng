@@ -1,0 +1,41 @@
+<div class="w-full">
+  <!-- Tablist -->
+  <div
+    role="tablist"
+    class="inline-flex w-full rounded-2xl p-1 border border-border bg-card gap-1 flex-wrap"
+    (keydown)="onKeydown($event)"
+  >
+    @for (t of items; track t.id) {
+      <button
+        type="button"
+        role="tab"
+        class="relative flex-1 cursor-pointer whitespace-normal rounded-xl px-4 py-2 text-sm font-medium transition select-none outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+        [class.opacity-50]="t.disabled"
+        [class.cursor-not-allowed]="t.disabled"
+        [attr.aria-selected]="t.id === active"
+        [attr.aria-controls]="'panel-' + t.id"
+        [attr.tabindex]="t.id === active ? 0 : -1"
+        [disabled]="t.disabled"
+        (click)="setActive(t.id)"
+      >
+        <span class="relative z-10 inline-flex items-center gap-2 justify-center">
+          @if (t.iconTpl) {
+            <ng-container [ngTemplateOutlet]="t.iconTpl"></ng-container>
+          }
+          {{ t.label }}
+        </span>
+
+        <!-- Active pill -->
+        <span
+          class="absolute inset-0 rounded-xl border border-border bg-background shadow-sm transition"
+          [class.opacity-0]="t.id !== active"
+        ></span>
+      </button>
+    }
+  </div>
+
+  <!-- Content slot (опционально, можешь не использовать) -->
+  <div class="mt-6">
+    <ng-content />
+  </div>
+</div>

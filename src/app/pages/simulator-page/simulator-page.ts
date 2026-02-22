@@ -9,6 +9,7 @@ import { UbInputDirective } from '@/shared/ui/input';
 import { UbMoneyInputDirective } from '@/shared/ui/ub-money-input';
 import { AppContainerComponent } from '@/shared/layouts/app-container';
 import { TranslatePipe } from '@ngx-translate/core';
+import { UbTabItem, UbTabsComponent } from '@/shared/ui/tabs/tabs';
 
 type SimulationResult = {
   capital: number;
@@ -16,6 +17,8 @@ type SimulationResult = {
   avgInvestPerMonth: number;
   avgSpendPerMonth: number;
 };
+
+type TabId = 'live' | 'invest' | 'compound';
 
 @Component({
   selector: 'app-simulator',
@@ -29,6 +32,7 @@ type SimulationResult = {
     UbInputDirective,
     UbMoneyInputDirective,
     AppContainerComponent,
+    UbTabsComponent,
   ],
   templateUrl: './simulator-page.html',
   animations: [
@@ -51,6 +55,18 @@ export class SimulatorPage {
 
   years = signal(20); // 1..100
   result = signal<SimulationResult | null>(null);
+
+  activeTab = signal<TabId>('live');
+
+  tabItems = [
+    { id: 'live', label: 'ПРОЖИТЬ' },
+    { id: 'invest', label: 'ИНВЕСТИРОВАТЬ' },
+    { id: 'compound', label: 'СЛОЖНЫЙ %' },
+  ];
+
+  setActiveTab(id: string) {
+    this.activeTab.set(id as TabId);
+  }
 
   salaryGrowthPercent() {
     return ((this.salaryGrowth - 5) / (20 - 5)) * 100;
