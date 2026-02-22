@@ -61,6 +61,8 @@
   --sidebar-border: oklch(0.92 0.004 286.32);
 
   --sidebar-ring: oklch(0.871 0.006 286.286);
+
+  --gray: @apply text-zinc-400;
 }
 
 .dark {
@@ -118,6 +120,8 @@
   --sidebar-border: oklch(0.274 0.006 286.033);
 
   --sidebar-ring: oklch(0.442 0.017 285.786);
+
+  --gray: @apply text-zinc-300;
 }
 
 @theme inline {
@@ -185,4 +189,33 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+input[type='range'] {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+}
+
+input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  height: 18px;
+  width: 18px;
+  border-radius: 9999px;
+  background: #22c55e;
+  border: 2px solid #0f172a;
+  box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.2);
+  transition: 0.2s;
+}
+
+input[type='range']::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+}
+
+input[type='range']::-moz-range-thumb {
+  height: 18px;
+  width: 18px;
+  border-radius: 9999px;
+  background: #22c55e;
+  border: none;
 }

@@ -16,7 +16,7 @@ import {
   TranslateService,
 } from '@ngx-translate/core';
 import { firstValueFrom } from 'rxjs';
-
+import { provideAnimations } from '@angular/platform-browser/animations';
 import { routes } from './app.routes';
 import { UniversalTranslateLoader } from '@/shared/i18n/universal-translate.loader';
 
@@ -50,6 +50,7 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
+    provideAnimations(),
     provideClientHydration(withEventReplay()),
     provideHttpClient(withFetch()),
     provideTranslateService({
