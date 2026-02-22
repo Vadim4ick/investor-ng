@@ -71,6 +71,14 @@
         "title": "Invest",
         "desc": "An option for those who want to understand how different investment parameters (profitability, reinvestment) affect the final capital, all other things being equal."
       }
+    },
+
+    "invest": {
+      "return": "Return on investment (%/year)",
+      "reinvest": "Reinvestment",
+
+      "reinvest_yes": "Yes",
+      "reinvest_no": "No"
     }
   },
 

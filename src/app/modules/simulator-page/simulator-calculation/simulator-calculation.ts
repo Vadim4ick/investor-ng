@@ -21,6 +21,7 @@ type SimulationResult = {
 };
 
 type TabId = 'live' | 'invest';
+type ReinvestMode = 'reinvest' | 'payout';
 
 @Component({
   selector: 'app-simulator-calculation',
@@ -57,6 +58,25 @@ export class SimulatorCalculation {
 
   years = signal(20); // 1..100
   inflation = signal(1); // 1..100
+
+  investReturn = signal(8); // % годовых (диапазон, например 0..30)
+  reinvestMode = signal<ReinvestMode>('reinvest');
+
+  investReturnPercent() {
+    const min = 0;
+    const max = 30;
+    return ((this.investReturn() - min) / (max - min)) * 100;
+  }
+
+  setInvestReturn(value: any) {
+    const n = Number(value);
+    const clamped = Number.isFinite(n) ? Math.min(30, Math.max(0, Math.round(n))) : 8;
+    this.investReturn.set(clamped);
+  }
+
+  setReinvestMode(v: ReinvestMode) {
+    this.reinvestMode.set(v);
+  }
 
   result = signal<SimulationResult | null>(null);
 
@@ -121,17 +141,23 @@ export class SimulatorCalculation {
     const years = this.years();
     const startSalary = this.salary();
 
-    const salaryGrowth = this.salaryGrowth / 100; // номинальный рост ЗП
+    const salaryGrowth = this.salaryGrowth / 100;
     const spendK = this.spendPercent / 100;
 
-    const investReturn = 0.08; // номинальная доходность
-    const infl = this.inflation() / 100; // годовая инфляция
+    const infl = this.inflation() / 100;
 
-    // Реальная доходность (Fisher)
-    const realReturn = (1 + investReturn) / (1 + infl) - 1;
+    const investReturnNominal = this.activeTab() === 'invest' ? this.investReturn() / 100 : 0;
 
-    let salaryNominal = startSalary; // номинальная зп по годам
-    let capitalReal = 0; // капитал в "деньгах сегодняшнего года"
+    const mode = this.reinvestMode(); // 'reinvest' | 'payout'
+
+    // реальная доходность
+    const realReturn =
+      this.activeTab() === 'invest' ? (1 + investReturnNominal) / (1 + infl) - 1 : 0;
+
+    let salaryNominal = startSalary;
+
+    let capitalReal = 0; // капитал в ценах "сегодня"
+    let payoutReal = 0; // суммарно "выведенный" доход (если mode=payout)
 
     let totalInvestReal = 0;
     let totalSpendReal = 0;
@@ -141,22 +167,26 @@ export class SimulatorCalculation {
       const yearSpendNominal = yearIncomeNominal * spendK;
       const yearInvestNominal = yearIncomeNominal - yearSpendNominal;
 
-      // Переводим потоки этого года в реальные деньги
       const df = 1 / Math.pow(1 + infl, y);
       const yearSpendReal = yearSpendNominal * df;
       const yearInvestReal = yearInvestNominal * df;
 
-      // Капитал ведём в реальных деньгах
-      capitalReal = capitalReal * (1 + realReturn) + yearInvestReal;
-
-      totalInvestReal += yearInvestReal;
       totalSpendReal += yearSpendReal;
+      totalInvestReal += yearInvestReal;
 
-      // Номинальный рост зп в конце года
+      if (this.activeTab() === 'invest') {
+        if (mode === 'reinvest') {
+          capitalReal = capitalReal * (1 + realReturn) + yearInvestReal;
+        } else {
+          // payout: доход не капитализируем, капитал растёт только взносами
+          payoutReal += capitalReal * realReturn; // доход "сняли"
+          capitalReal = capitalReal + yearInvestReal;
+        }
+      }
+
       salaryNominal = salaryNominal * (1 + salaryGrowth);
     }
 
-    // Финальная зп тоже лучше показать в реальных деньгах (на конец горизонта, но в ценах "сегодня")
     const salaryReal = salaryNominal / Math.pow(1 + infl, years);
 
     const avgInvestPerMonthReal = totalInvestReal / (years * 12);
