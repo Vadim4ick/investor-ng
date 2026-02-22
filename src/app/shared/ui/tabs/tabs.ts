@@ -7,6 +7,7 @@ import {
   TemplateRef,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TranslatePipe } from '@ngx-translate/core';
 
 export type UbTabItem = {
   id: string;
@@ -18,7 +19,7 @@ export type UbTabItem = {
 @Component({
   selector: 'ub-tabs',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './tabs.html',
 })

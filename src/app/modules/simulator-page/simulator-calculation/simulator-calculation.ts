@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { trigger, transition, style, animate } from '@angular/animations';
@@ -7,8 +7,10 @@ import { UbButtonDirective } from '@/shared/ui/button';
 import { UbInputDirective } from '@/shared/ui/input';
 import { UbMoneyInputDirective } from '@/shared/ui/ub-money-input';
 import { AppContainerComponent } from '@/shared/layouts/app-container';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { UbTabsComponent } from '@/shared/ui/tabs/tabs';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { map } from 'rxjs/operators';
 
 type SimulationResult = {
   capital: number;
@@ -46,6 +48,8 @@ type TabId = 'live' | 'invest';
   ],
 })
 export class SimulatorCalculation {
+  private translate = inject(TranslateService);
+
   salary = signal(100000);
 
   salaryGrowth = 10; // %/год
@@ -58,10 +62,15 @@ export class SimulatorCalculation {
 
   activeTab = signal<TabId>('live');
 
-  tabItems = [
-    { id: 'live', label: 'ПРОЖИТЬ' },
-    { id: 'invest', label: 'ИНВЕСТИРОВАТЬ' },
-  ] as { id: TabId; label: string }[];
+  tabItems = toSignal(
+    this.translate.stream(['simulator.tabs.live.title', 'simulator.tabs.invest.title']).pipe(
+      map((t) => [
+        { id: 'live' as const, label: t['simulator.tabs.live.title'] },
+        { id: 'invest' as const, label: t['simulator.tabs.invest.title'] },
+      ]),
+    ),
+    { initialValue: [] as { id: TabId; label: string }[] },
+  );
 
   setActiveTab(id: string) {
     this.activeTab.set(id as TabId);

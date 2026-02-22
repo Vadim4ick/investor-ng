@@ -22,7 +22,7 @@
           @if (t.iconTpl) {
             <ng-container [ngTemplateOutlet]="t.iconTpl"></ng-container>
           }
-          {{ t.label }}
+          {{ t.label | translate }}
         </span>
 
         <!-- Active pill -->
