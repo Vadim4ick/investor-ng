@@ -18,7 +18,7 @@ import {
 import { firstValueFrom } from 'rxjs';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { routes } from './app.routes';
-import { UniversalTranslateLoader } from '@/shared/i18n/universal-translate.loader';
+import { UniversalTranslateLoader } from './shared/core/i18n/universal-translate.loader';
 
 function extractLang(path?: string): 'ru' | 'en' {
   const first = (path || '').split('/').filter(Boolean)[0]?.toLowerCase();

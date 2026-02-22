@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, inject } from '@angular/core';
-import { LocaleService } from '@/shared/core/locale.service';
+import { LocaleService } from '@/services/locale.service';
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 

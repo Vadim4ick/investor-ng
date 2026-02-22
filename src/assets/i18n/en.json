@@ -60,6 +60,17 @@
       "spending": "Spending (% of salary)",
       "years": "Years",
       "inflation": "Inflation (%/year)"
+    },
+
+    "tabs": {
+      "live": {
+        "title": "Live",
+        "desc": "An option for those who want to live the scenario of their life with different parameters (salary growth, expenses, years) and see what will happen to their capital."
+      },
+      "invest": {
+        "title": "Invest",
+        "desc": "An option for those who want to understand how different investment parameters (profitability, reinvestment) affect the final capital, all other things being equal."
+      }
     }
   },
 

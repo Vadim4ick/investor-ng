@@ -1,4 +1,4 @@
-import { AppLang, LocaleService } from '@/shared/core/locale.service';
+import { AppLang, LocaleService } from '@/services/locale.service';
 import { Component, inject } from '@angular/core';
 
 @Component({
