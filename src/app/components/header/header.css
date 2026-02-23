@@ -1,0 +1,48 @@
+.burger {
+  position: relative;
+  width: 18px;
+  height: 14px;
+  display: inline-block;
+}
+
+.burger__line {
+  position: absolute;
+  left: 0;
+  width: 18px;
+  height: 2px;
+  border-radius: 9999px;
+  background: currentColor;
+  transition:
+    transform 200ms ease,
+    opacity 150ms ease;
+}
+
+.burger__line--top {
+  top: 0;
+}
+.burger__line--mid {
+  top: 6px;
+}
+.burger__line--bot {
+  top: 12px;
+}
+
+.burger.is-open .burger__line--top {
+  transform: translateY(6px) rotate(45deg);
+}
+
+.burger.is-open .burger__line--mid {
+  opacity: 0;
+  transform: scaleX(0.5);
+}
+
+.burger.is-open .burger__line--bot {
+  transform: translateY(-6px) rotate(-45deg);
+}
+
+/* respects reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .burger__line {
+    transition: none;
+  }
+}

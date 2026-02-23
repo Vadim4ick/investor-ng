@@ -1,21 +1,29 @@
 <header class="sticky top-0 z-50 w-full border-b border-border bg-background/75 backdrop-blur">
   <div class="mx-auto max-w-6xl px-4">
     <div class="flex h-14 items-center justify-between gap-3">
-      <div class="md:hidden flex items-center gap-2">
+      <!-- Left -->
+      <div class="flex items-center gap-2">
+        <!-- Burger (mobile only) -->
         <button
           type="button"
-          class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-card shadow-sm transition hover:bg-accent"
-          (click)="mobileMenuOpen.set(true)"
+          class="md:hidden relative inline-flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-card shadow-sm transition hover:bg-accent focus:outline-none focus:ring-2 focus:ring-ring motion-reduce:transition-none"
+          (click)="toggleMobileMenu()"
           aria-label="Open menu"
           aria-controls="mobile-menu"
           [attr.aria-expanded]="mobileMenuOpen()"
         >
-          <span class="text-lg leading-none">☰</span>
+          <!-- Animated burger icon -->
+          <span class="burger" [class.is-open]="mobileMenuOpen()" aria-hidden="true">
+            <span class="burger__line burger__line--top"></span>
+            <span class="burger__line burger__line--mid"></span>
+            <span class="burger__line burger__line--bot"></span>
+          </span>
         </button>
 
         <div class="hidden md:block"></div>
       </div>
 
+      <!-- Center: desktop nav -->
       <nav class="hidden md:flex items-center gap-1">
         @for (item of nav(); track item.path) {
           <app-link
@@ -28,14 +36,15 @@
         }
       </nav>
 
+      <!-- Right -->
       <div class="flex items-center gap-2">
-        <!-- Desktop actions -->
         <div class="hidden md:flex items-center gap-2">
           <lang-switcher />
           <theme-toggle />
           <div class="h-8 w-px bg-border mx-1 hidden sm:block"></div>
         </div>
 
+        <!-- Login stays outside -->
         <a
           routerLink="/login"
           class="inline-flex h-9 items-center justify-center rounded-xl border border-border bg-card px-3 text-sm font-semibold shadow-sm transition hover:bg-accent hover:text-accent-foreground"
@@ -47,53 +56,59 @@
   </div>
 </header>
 
-@if (mobileMenuOpen()) {
-  <div
-    class="fixed inset-0 z-60 bg-black/40"
-    (click)="mobileMenuOpen.set(false)"
-    aria-hidden="true"
-  ></div>
+<!-- Backdrop (always in DOM for smooth transitions) -->
+<div
+  class="fixed inset-0 z-[60] bg-black/40 transition-opacity duration-200 motion-reduce:transition-none"
+  [class.opacity-0]="!mobileMenuOpen()"
+  [class.opacity-100]="mobileMenuOpen()"
+  [class.pointer-events-none]="!mobileMenuOpen()"
+  (click)="closeMobileMenu()"
+  aria-hidden="true"
+></div>
 
-  <!-- Drawer -->
-  <aside
-    id="mobile-menu"
-    class="fixed left-0 top-0 z-70 h-dvh w-[85vw] max-w-sm border-r border-border bg-background shadow-2xl"
-    (click)="$event.stopPropagation()"
-  >
-    <div class="flex h-14 items-center justify-between px-4 border-b border-border">
-      <div class="text-sm font-semibold">Menu</div>
-      <button
-        type="button"
-        class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-card transition hover:bg-accent"
-        (click)="mobileMenuOpen.set(false)"
-        aria-label="Close menu"
-      >
-        ✕
-      </button>
+<!-- Drawer -->
+<aside
+  id="mobile-menu"
+  class="fixed left-0 top-0 z-[70] h-dvh w-[85vw] max-w-sm border-r border-border bg-background shadow-2xl transform transition-transform duration-200 will-change-transform motion-reduce:transition-none"
+  [class.-translate-x-full]="!mobileMenuOpen()"
+  [class.translate-x-0]="mobileMenuOpen()"
+  (click)="$event.stopPropagation()"
+  role="dialog"
+  aria-modal="true"
+  [attr.aria-hidden]="!mobileMenuOpen()"
+>
+  <div class="flex h-14 items-center justify-between px-4 border-b border-border">
+    <div class="text-sm font-semibold">Menu</div>
+
+    <button
+      type="button"
+      class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-card transition hover:bg-accent focus:outline-none focus:ring-2 focus:ring-ring motion-reduce:transition-none"
+      (click)="closeMobileMenu()"
+      aria-label="Close menu"
+    >
+      ✕
+    </button>
+  </div>
+
+  <div class="p-4 space-y-4">
+    <div class="flex items-center gap-2">
+      <lang-switcher />
+      <theme-toggle />
     </div>
 
-    <div class="p-4 space-y-4">
-      <!-- Actions inside burger -->
-      <div class="flex items-center gap-2">
-        <lang-switcher />
-        <theme-toggle />
-      </div>
+    <div class="h-px bg-border"></div>
 
-      <div class="h-px bg-border"></div>
-
-      <!-- Nav links -->
-      <nav class="flex flex-col gap-2">
-        @for (item of nav(); track item.path) {
-          <app-link
-            [path]="item.path"
-            [label]="item.label"
-            [activeOptions]="{ exact: item.exact ?? false }"
-            [activeClass]="'bg-accent text-primary dark:text-white'"
-            classList="block rounded-xl px-3 w-full py-2 text-sm font-medium transition hover:bg-accent hover:text-accent-foreground text-black dark:text-muted-foreground border border-border bg-card"
-            (click)="mobileMenuOpen.set(false)"
-          ></app-link>
-        }
-      </nav>
-    </div>
-  </aside>
-}
+    <nav class="flex flex-col gap-2">
+      @for (item of nav(); track item.path) {
+        <app-link
+          [path]="item.path"
+          [label]="item.label"
+          [activeOptions]="{ exact: item.exact ?? false }"
+          [activeClass]="'bg-accent text-primary dark:text-white'"
+          classList="block rounded-xl px-3 w-full py-2 text-sm font-medium transition hover:bg-accent hover:text-accent-foreground text-black dark:text-muted-foreground border border-border bg-card"
+          (click)="closeMobileMenu()"
+        ></app-link>
+      }
+    </nav>
+  </div>
+</aside>
