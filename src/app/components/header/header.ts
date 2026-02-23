@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 
 import { LangSwitcherComponent } from '@/components/lang-switcher/lang-switcher';
@@ -24,6 +24,8 @@ type NavItem = { path: string; label: string; exact?: boolean };
 })
 export class HeaderComponent {
   private translate = inject(TranslateService);
+
+  mobileMenuOpen = signal(false);
 
   nav = toSignal(
     this.translate.stream(['header.navbar.home', 'header.navbar.simulator']).pipe(

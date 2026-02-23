@@ -1,46 +1,41 @@
 <header class="sticky top-0 z-50 w-full border-b border-border bg-background/75 backdrop-blur">
   <div class="mx-auto max-w-6xl px-4">
     <div class="flex h-14 items-center justify-between gap-3">
-      <!-- Left: Brand -->
-      <!-- <a
-        routerLink="/"
-        class="flex items-center gap-2 rounded-xl px-2 py-1 transition hover:bg-accent hover:text-accent-foreground"
-      >
-        <span
-          class="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-border bg-card shadow-sm"
-          aria-hidden="true"
+      <div class="md:hidden flex items-center gap-2">
+        <button
+          type="button"
+          class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-card shadow-sm transition hover:bg-accent"
+          (click)="mobileMenuOpen.set(true)"
+          aria-label="Open menu"
+          aria-controls="mobile-menu"
+          [attr.aria-expanded]="mobileMenuOpen()"
         >
-          <span class="text-sm font-bold">₿</span>
-        </span>
-        <div class="leading-tight">
-          <div class="text-sm font-semibold">Investor</div>
-          <div class="text-xs text-muted-foreground">tools</div>
-        </div>
-      </a> -->
-      <div></div>
+          <span class="text-lg leading-none">☰</span>
+        </button>
 
-      <!-- Center: Nav (desktop) -->
+        <div class="hidden md:block"></div>
+      </div>
+
       <nav class="hidden md:flex items-center gap-1">
         @for (item of nav(); track item.path) {
           <app-link
             [path]="item.path"
             [label]="item.label"
             [activeOptions]="{ exact: item.exact ?? false }"
-            [activeClass]="'bg-accent text-accent-foreground'"
-            classList="rounded-xl px-3 py-2 text-sm font-medium transition hover:bg-accent hover:text-accent-foreground text-muted-foreground"
-          >
-          </app-link>
+            [activeClass]="'bg-accent text-black dark:text-accent-foreground'"
+            classList="rounded-xl px-3 py-2 text-sm font-medium transition hover:bg-accent hover:text-accent-foreground text-black dark:text-white"
+          ></app-link>
         }
       </nav>
 
-      <!-- Right: actions -->
       <div class="flex items-center gap-2">
-        <lang-switcher />
-        <theme-toggle />
+        <!-- Desktop actions -->
+        <div class="hidden md:flex items-center gap-2">
+          <lang-switcher />
+          <theme-toggle />
+          <div class="h-8 w-px bg-border mx-1 hidden sm:block"></div>
+        </div>
 
-        <div class="h-8 w-px bg-border mx-1 hidden sm:block"></div>
-
-        <!-- Login button (placeholder) -->
         <a
           routerLink="/login"
           class="inline-flex h-9 items-center justify-center rounded-xl border border-border bg-card px-3 text-sm font-semibold shadow-sm transition hover:bg-accent hover:text-accent-foreground"
@@ -49,21 +44,56 @@
         </a>
       </div>
     </div>
+  </div>
+</header>
 
-    <!-- Mobile nav -->
-    <nav class="md:hidden pb-3">
-      <div class="flex flex-wrap gap-2">
+@if (mobileMenuOpen()) {
+  <div
+    class="fixed inset-0 z-60 bg-black/40"
+    (click)="mobileMenuOpen.set(false)"
+    aria-hidden="true"
+  ></div>
+
+  <!-- Drawer -->
+  <aside
+    id="mobile-menu"
+    class="fixed left-0 top-0 z-70 h-dvh w-[85vw] max-w-sm border-r border-border bg-background shadow-2xl"
+    (click)="$event.stopPropagation()"
+  >
+    <div class="flex h-14 items-center justify-between px-4 border-b border-border">
+      <div class="text-sm font-semibold">Menu</div>
+      <button
+        type="button"
+        class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-card transition hover:bg-accent"
+        (click)="mobileMenuOpen.set(false)"
+        aria-label="Close menu"
+      >
+        ✕
+      </button>
+    </div>
+
+    <div class="p-4 space-y-4">
+      <!-- Actions inside burger -->
+      <div class="flex items-center gap-2">
+        <lang-switcher />
+        <theme-toggle />
+      </div>
+
+      <div class="h-px bg-border"></div>
+
+      <!-- Nav links -->
+      <nav class="flex flex-col gap-2">
         @for (item of nav(); track item.path) {
           <app-link
             [path]="item.path"
             [label]="item.label"
             [activeOptions]="{ exact: item.exact ?? false }"
-            [activeClass]="'bg-accent text-accent-foreground'"
-            classList="rounded-xl px-3 py-2 text-sm font-medium transition hover:bg-accent hover:text-accent-foreground text-muted-foreground border border-border bg-card"
-          >
-          </app-link>
+            [activeClass]="'bg-accent text-primary dark:text-white'"
+            classList="block rounded-xl px-3 w-full py-2 text-sm font-medium transition hover:bg-accent hover:text-accent-foreground text-black dark:text-muted-foreground border border-border bg-card"
+            (click)="mobileMenuOpen.set(false)"
+          ></app-link>
         }
-      </div>
-    </nav>
-  </div>
-</header>
+      </nav>
+    </div>
+  </aside>
+}
