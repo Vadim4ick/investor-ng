@@ -1,5 +1,5 @@
 import { Component, effect, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { trigger, transition, style, animate } from '@angular/animations';
 
@@ -139,34 +139,33 @@ export class SimulatorCalculation {
 
   runSimulation() {
     const years = this.years();
-    const startSalary = this.salary();
+    const startSalaryMonthly = this.salary();
 
-    const salaryGrowth = this.salaryGrowth / 100;
-    const spendK = this.spendPercent / 100;
+    const salaryGrowth = this.salaryGrowth / 100; // %/год
+    const spendK = this.spendPercent / 100; // доля трат
+    const infl = this.inflation() / 100; // %/год
 
-    const infl = this.inflation() / 100;
-
-    const investReturnNominal = this.activeTab() === 'invest' ? this.investReturn() / 100 : 0;
-
+    const isInvestTab = this.activeTab() === 'invest';
     const mode = this.reinvestMode(); // 'reinvest' | 'payout'
 
-    // реальная доходность
-    const realReturn =
-      this.activeTab() === 'invest' ? (1 + investReturnNominal) / (1 + infl) - 1 : 0;
+    const investReturnNominal = isInvestTab ? this.investReturn() / 100 : 0;
+    const realReturn = isInvestTab ? (1 + investReturnNominal) / (1 + infl) - 1 : 0;
 
-    let salaryNominal = startSalary;
+    let salaryMonthlyNominal = startSalaryMonthly;
 
-    let capitalReal = 0; // капитал в ценах "сегодня"
-    let payoutReal = 0; // суммарно "выведенный" доход (если mode=payout)
+    let capitalReal = 0; // остаток капитала (в ценах "сегодня")
+    let payoutReal = 0; // суммарно снятая доходность (в ценах "сегодня")
 
-    let totalInvestReal = 0;
-    let totalSpendReal = 0;
+    let totalInvestReal = 0; // сумма взносов (реальная)
+    let totalSpendReal = 0; // сумма трат (реальная)
 
     for (let y = 1; y <= years; y++) {
-      const yearIncomeNominal = salaryNominal * 12;
+      // Номинальные годовые потоки
+      const yearIncomeNominal = salaryMonthlyNominal * 12;
       const yearSpendNominal = yearIncomeNominal * spendK;
       const yearInvestNominal = yearIncomeNominal - yearSpendNominal;
 
+      // Приведение к "сегодняшним" ценам
       const df = 1 / Math.pow(1 + infl, y);
       const yearSpendReal = yearSpendNominal * df;
       const yearInvestReal = yearInvestNominal * df;
@@ -174,27 +173,41 @@ export class SimulatorCalculation {
       totalSpendReal += yearSpendReal;
       totalInvestReal += yearInvestReal;
 
-      if (this.activeTab() === 'invest') {
+      // Обновление капитала
+      if (isInvestTab) {
         if (mode === 'reinvest') {
+          // Реинвест: тело растёт и от доходности, и от взносов
           capitalReal = capitalReal * (1 + realReturn) + yearInvestReal;
         } else {
-          // payout: доход не капитализируем, капитал растёт только взносами
-          payoutReal += capitalReal * realReturn; // доход "сняли"
+          // Payout: доходность снимаем, тело растёт только от взносов
+          const incomeThisYearReal = capitalReal * realReturn;
+          payoutReal += incomeThisYearReal;
           capitalReal = capitalReal + yearInvestReal;
         }
+      } else {
+        // Live: просто копим (доходность 0)
+        capitalReal = capitalReal + yearInvestReal;
       }
 
-      salaryNominal = salaryNominal * (1 + salaryGrowth);
+      // Рост зарплаты на следующий год
+      salaryMonthlyNominal = salaryMonthlyNominal * (1 + salaryGrowth);
     }
 
-    const salaryReal = salaryNominal / Math.pow(1 + infl, years);
+    // Финальная ЗП в реальных рублях (в ценах "сегодня")
+    const finalSalaryReal = salaryMonthlyNominal / Math.pow(1 + infl, years);
 
     const avgInvestPerMonthReal = totalInvestReal / (years * 12);
     const avgSpendPerMonthReal = totalSpendReal / (years * 12);
 
+    // ВАЖНО:
+    // - capitalReal в режиме payout == сумма взносов (в реале), поэтому совпадает с live
+    // - разница payout режима — это payoutReal (снятый доход), поэтому выводим totalCapital
+    const shownCapitalReal =
+      isInvestTab && mode === 'payout' ? capitalReal + payoutReal : capitalReal;
+
     this.result.set({
-      capital: Math.round(capitalReal),
-      finalSalary: Math.round(salaryReal),
+      capital: Math.round(shownCapitalReal),
+      finalSalary: Math.round(finalSalaryReal),
       avgInvestPerMonth: Math.round(avgInvestPerMonthReal),
       avgSpendPerMonth: Math.round(avgSpendPerMonthReal),
       inflation: this.inflation(),

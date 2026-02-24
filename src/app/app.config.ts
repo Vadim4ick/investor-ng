@@ -5,6 +5,7 @@ import {
   provideBrowserGlobalErrorListeners,
   PLATFORM_ID,
   REQUEST,
+  LOCALE_ID,
 } from '@angular/core';
 import { isPlatformServer } from '@angular/common';
 import { provideRouter } from '@angular/router';
@@ -48,6 +49,7 @@ function initLocale() {
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    { provide: LOCALE_ID, useValue: 'ru-RU' },
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
     provideAnimations(),
