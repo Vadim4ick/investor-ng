@@ -90,6 +90,28 @@
     }
   },
 
+  "authorization": {
+    "continueWithTelegram": "Continue with Telegram",
+    "or": "or continue with",
+    "signIn": "Sign in",
+    "signUp": "Sign up",
+    "name": "Name",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm password",
+
+    "login": {
+      "title": "Welcome",
+      "desc": "Enter your account credentials to log in",
+      "noAccount": "Don't have an account?"
+    },
+    "register": {
+      "title": "Create an account",
+      "desc": "Fill in the fields below to register",
+      "alreadyHaveAccount": "Already have an account?"
+    }
+  },
+
   "seo": {
     "home": {
       "title": "Investor Simulator - Find out if you'll have capital by 40",

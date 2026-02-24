@@ -8,7 +8,6 @@ import {
   PLATFORM_ID,
   signal,
 } from '@angular/core';
-import { RouterLink } from '@angular/router';
 
 import { LangSwitcherComponent } from '@/components/lang-switcher/lang-switcher';
 import { ThemeToggleComponent } from '@/components/theme-switcher/theme-switcher';
@@ -23,13 +22,7 @@ type NavItem = { path: string; label: string; exact?: boolean };
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [
-    RouterLink,
-    LangSwitcherComponent,
-    ThemeToggleComponent,
-    TranslatePipe,
-    AppLinkComponent,
-  ],
+  imports: [LangSwitcherComponent, ThemeToggleComponent, TranslatePipe, AppLinkComponent],
   templateUrl: './header.html',
   styleUrl: './header.css',
 })

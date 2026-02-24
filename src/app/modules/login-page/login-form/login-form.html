@@ -1,0 +1,121 @@
+<div class="mb-6">
+  <div class="mb-6">
+    @if (authMode === 'login') {
+      <h1 class="text-2xl md:text-3xl font-bold tracking-tight">
+        {{ 'authorization.login.title' | translate }}
+      </h1>
+      <p class="text-sm text-muted-foreground mt-1">{{ 'authorization.login.desc' | translate }}</p>
+    } @else {
+      <h1 class="text-2xl md:text-3xl font-bold tracking-tight">
+        {{ 'authorization.register.title' | translate }}
+      </h1>
+      <p class="text-sm text-muted-foreground mt-1">
+        {{ 'authorization.register.desc' | translate }}
+      </p>
+    }
+  </div>
+
+  <form class="space-y-4" (submit)="onSubmit($event)">
+    @if (authMode === 'register') {
+      <div class="flex flex-col gap-1">
+        <label class="text-sm font-medium text-foreground">{{
+          'authorization.name' | translate
+        }}</label>
+        <input type="text" placeholder="Your name" ubInput class="w-full" />
+      </div>
+    }
+
+    <div class="flex flex-col gap-1">
+      <label class="text-sm font-medium text-foreground">{{
+        'authorization.email' | translate
+      }}</label>
+      <input type="email" placeholder="you@example.com" ubInput class="w-full" />
+    </div>
+
+    <div class="flex flex-col gap-1">
+      <div class="flex items-center justify-between">
+        <label class="text-sm font-medium text-foreground">{{
+          'authorization.password' | translate
+        }}</label>
+
+        @if (authMode === 'login') {
+          <a routerLink="/forgot" class="text-sm text-primary hover:underline">Forgot password?</a>
+        }
+      </div>
+
+      <input type="password" placeholder="••••••••" ubInput class="w-full" />
+    </div>
+
+    @if (authMode === 'register') {
+      <div class="flex flex-col gap-1">
+        <label class="text-sm font-medium text-foreground">{{
+          'authorization.confirmPassword' | translate
+        }}</label>
+        <input type="password" placeholder="••••••••" ubInput class="w-full" />
+      </div>
+
+      <label class="flex items-center gap-2 text-sm text-muted-foreground">
+        <input type="checkbox" class="h-4 w-4 accent-primary" />
+        I agree to the <a routerLink="/terms" class="text-primary hover:underline">Terms</a>
+      </label>
+    }
+
+    <button
+      type="submit"
+      ubButton
+      class="w-full h-11 font-semibold text-white bg-primary hover:bg-primary/90 transition-colors"
+    >
+      @if (authMode === 'login') {
+        {{ 'authorization.signIn' | translate }}
+      } @else {
+        {{ 'authorization.signUp' | translate }}
+      }
+    </button>
+  </form>
+
+  <!-- Divider -->
+  <div class="relative my-6">
+    <div class="absolute inset-0 flex items-center">
+      <div class="w-full border-t border-border"></div>
+    </div>
+    <div class="relative flex justify-center text-xs uppercase">
+      <span class="bg-card px-3 text-muted-foreground"> {{ 'authorization.or' | translate }} </span>
+    </div>
+  </div>
+
+  <button
+    type="button"
+    class="w-full h-11 flex items-center justify-center gap-3 rounded-lg border border-border bg-[#229ED9] text-white font-semibold hover:bg-[#1d8ec5] transition-colors"
+    (click)="loginWithTelegram()"
+  >
+    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+      <path
+        d="M9.993 15.674l-.398 5.602c.57 0 .817-.245 1.113-.54l2.667-2.556 5.528 4.043c1.013.56 1.734.266 1.99-.94l3.607-16.902.001-.001c.305-1.42-.513-1.975-1.497-1.607L1.21 9.354c-1.385.54-1.365 1.314-.236 1.66l5.66 1.766L19.72 4.945c.617-.41 1.18-.183.718.227"
+      />
+    </svg>
+
+    {{ 'authorization.continueWithTelegram' | translate }}
+  </button>
+
+  <p class="text-sm text-center text-muted-foreground mt-6">
+    @if (authMode === 'login') {
+      {{ 'authorization.login.noAccount' | translate }}
+
+      <app-link
+        [label]="'authorization.signUp' | translate"
+        path="/register"
+        class="text-primary font-medium hover:underline"
+      >
+      </app-link>
+    } @else {
+      {{ 'authorization.register.alreadyHaveAccount' | translate }}
+
+      <app-link
+        path="/login"
+        [label]="'authorization.signIn' | translate"
+        class="text-primary font-medium hover:underline"
+      >
+      </app-link>
+    }
+  </p>
+</div>

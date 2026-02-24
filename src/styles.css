@@ -63,6 +63,8 @@
   --sidebar-ring: oklch(0.871 0.006 286.286);
 
   --gray: @apply text-zinc-400;
+  --p-top: 24px;
+  --header-height: 57px;
 }
 
 .dark {
