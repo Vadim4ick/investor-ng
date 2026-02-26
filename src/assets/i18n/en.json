@@ -86,7 +86,8 @@
     "login": "Authorization",
     "navbar": {
       "home": "Home",
-      "simulator": "Simulator"
+      "simulator": "Simulator",
+      "calculate": "Budget calculator"
     }
   },
 
@@ -98,6 +99,7 @@
     "name": "Name",
     "email": "Email",
     "password": "Password",
+    "forgot": "Forgot password",
     "confirmPassword": "Confirm password",
 
     "login": {
@@ -118,6 +120,20 @@
       "description": "An interactive financial literacy simulator. Find out how much capital you can accumulate in 20 years. Find out if you'll have enough money by 40.",
       "ogTitle": "Investor simulator",
       "ogDescription": "Run a 20-year life simulation and find out your net worth."
+    },
+
+    "simulator": {
+      "title": "Financial Literacy Simulator",
+      "description": "Set your life back 20 years and see how your finances can change through saving and investing.",
+      "ogTitle": "Financial Literacy Simulator",
+      "ogDescription": "Set your life back 20 years and discover how your finances can change through savings and investments.."
+    },
+
+    "authorization": {
+      "title": "Authorization",
+      "description": "Login to your account or register to start using the financial literacy simulator.",
+      "ogTitle": "Authorization",
+      "ogDescription": "Login to your account or register to start using the financial literacy simulator."
     }
   }
 }

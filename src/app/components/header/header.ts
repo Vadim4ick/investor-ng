@@ -16,8 +16,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs/operators';
 import { AppLinkComponent } from '@/shared/ui/app-link';
 import { isPlatformBrowser } from '@angular/common';
-
-type NavItem = { path: string; label: string; exact?: boolean };
+import { nav } from '@/shared/const/navbar.const';
 
 @Component({
   selector: 'app-header',
@@ -61,15 +60,9 @@ export class HeaderComponent {
   }
 
   nav = toSignal(
-    this.translate.stream(['header.navbar.home', 'header.navbar.simulator']).pipe(
-      map(
-        (t) =>
-          [
-            { path: '/', label: t['header.navbar.home'], exact: true },
-            { path: '/simulator', label: t['header.navbar.simulator'] },
-          ] satisfies NavItem[],
-      ),
-    ),
+    this.translate
+      .stream(['header.navbar.home', 'header.navbar.simulator', 'header.navbar.calculate'])
+      .pipe(map((t) => nav(t))),
     { initialValue: [] },
   );
 }

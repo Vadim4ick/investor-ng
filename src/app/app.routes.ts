@@ -5,6 +5,7 @@ import { LayoutComponent } from './shared/layouts/main-layout';
 import { SimulatorPage } from './pages/simulator-page/simulator-page';
 import { LoginPage } from './pages/login-page/login-page';
 import { RegisterPage } from './pages/register-page/register-page';
+import { Calculation } from './pages/calculation/calculation';
 
 export const routes: Routes = [
   // редирект с корня на ru (можно сменить на en)
@@ -19,6 +20,7 @@ export const routes: Routes = [
       { path: 'simulator', component: SimulatorPage },
       { path: 'login', component: LoginPage },
       { path: 'register', component: RegisterPage },
+      { path: 'calculate', component: Calculation },
     ],
   },
 
