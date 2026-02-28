@@ -21,12 +21,8 @@
       <div class="rounded-2xl border border-border bg-card p-5 md:p-6">
         <div class="mb-4 flex items-center justify-between">
           <h2 class="text-xl font-semibold">Последние операции</h2>
-          <button
-            type="button"
-            class="inline-flex h-9 items-center justify-center rounded-lg border border-border bg-background px-3 text-sm font-medium transition hover:bg-accent"
-          >
-            Добавить операцию
-          </button>
+
+          <button ubButton type="button" (click)="open = true">Добавить операцию</button>
         </div>
 
         <div class="overflow-x-auto">
@@ -269,4 +265,38 @@
       </div>
     </div>
   </app-container>
+
+  <app-dialog
+    [(open)]="open"
+    title="Добавить операцию"
+    description="Укажите название операции, ее категорию и сумму."
+    size="md"
+  >
+    <div class="flex flex-col gap-4">
+      <app-select
+        [options]="options"
+        placeholder="Выберите категорию"
+        label="Категория"
+        [searchable]="false"
+        [formControl]="cityCtrl"
+      ></app-select>
+
+      <label class="flex flex-col gap-1">
+        <span class="text-sm font-medium">Описание</span>
+
+        <input ubInput type="text" placeholder="Покупка в Магните" class="w-full" />
+      </label>
+
+      <label class="flex flex-col gap-1">
+        <span class="text-sm font-medium">Цена</span>
+
+        <input ubInput ubMoneyInput type="text" placeholder="1 000" class="w-full" />
+      </label>
+    </div>
+
+    <div dialogActions class="flex items-center gap-2">
+      <button ubButton variant="secondary" (click)="open = false">Отмена</button>
+      <button ubButton (click)="confirm()">Сохранить</button>
+    </div>
+  </app-dialog>
 </section>

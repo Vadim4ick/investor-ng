@@ -1,0 +1,80 @@
+<div data-select-root class="w-full">
+  <label *ngIf="label" class="mb-1 block text-sm font-medium text-foreground">
+    {{ label }}
+  </label>
+
+  <!-- Trigger -->
+  <button
+    #trigger
+    type="button"
+    class="relative w-full rounded-xl border border-border bg-background px-3 py-2 text-left text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-60 disabled:cursor-not-allowed"
+    [disabled]="disabled"
+    (click)="toggle()"
+    (blur)="markTouched()"
+    aria-haspopup="listbox"
+    [attr.aria-expanded]="open"
+  >
+    <span class="block truncate" [class.text-muted-foreground]="!selectedOption">
+      {{ selectedOption?.label || placeholder }}
+    </span>
+
+    <!-- right side icons -->
+    <span class="absolute inset-y-0 right-2 flex items-center gap-1">
+      <button
+        *ngIf="selectedOption && !disabled"
+        type="button"
+        class="rounded-lg px-2 py-1 text-muted-foreground hover:bg-muted"
+        (click)="clearSelection($event)"
+        aria-label="Clear"
+      >
+        ✕
+      </button>
+    </span>
+  </button>
+
+  @if (open) {
+    <!-- Dropdown -->
+    <div class="relative mt-2">
+      <div
+        class="absolute z-50 w-full rounded-2xl border border-border bg-background shadow-xl overflow-hidden"
+        role="listbox"
+      >
+        @if (searchable) {
+          <!-- Search -->
+          <div *ngIf="searchable" class="p-2 border-b border-border">
+            <input
+              #searchInput
+              type="text"
+              class="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              placeholder="Поиск..."
+              [value]="query"
+              (input)="onSearchInput($any($event.target).value)"
+            />
+          </div>
+        }
+
+        <!-- Options -->
+        <div #list class="max-h-60 overflow-auto p-1">
+          <div
+            *ngFor="let opt of filteredOptions; let i = index; trackBy: trackByValue"
+            class="flex cursor-pointer select-none items-center justify-between rounded-xl px-3 py-2 text-sm hover:bg-muted"
+            [class.bg-muted]="i === activeIndex"
+            [class.opacity-50]="opt.disabled"
+            [class.cursor-not-allowed]="opt.disabled"
+            (mouseenter)="activeIndex = i"
+            (click)="selectOption(opt)"
+            [attr.data-idx]="i"
+            [attr.aria-selected]="compareWith(opt.value, value)"
+          >
+            <span class="truncate">{{ opt.label }}</span>
+            <span class="text-muted-foreground" *ngIf="compareWith(opt.value, value)">✓</span>
+          </div>
+
+          <div *ngIf="!filteredOptions.length" class="px-3 py-3 text-sm text-muted-foreground">
+            Ничего не найдено
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>

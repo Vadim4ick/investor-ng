@@ -1,0 +1,71 @@
+<ng-container *ngIf="open">
+  <!-- overlay -->
+  <div
+    class="fixed inset-0 z-50 bg-black/60 backdrop-blur-[2px] animate-in fade-in duration-150"
+    (click)="onOverlayClick()"
+    aria-hidden="true"
+  ></div>
+
+  <!-- container -->
+  <div class="fixed inset-0 z-50 grid place-items-center p-4 sm:p-6">
+    <section
+      #panel
+      class="
+        w-full
+        {{ panelWidthClass }}
+        max-h-[80vh]
+        overflow-auto
+        rounded-2xl
+        border border-border
+        bg-background
+        shadow-xl
+        outline-none
+        animate-in
+        fade-in
+        zoom-in-95
+        slide-in-from-bottom-2
+        duration-150
+      "
+      role="dialog"
+      aria-modal="true"
+      [attr.aria-label]="title || 'Dialog'"
+      tabindex="-1"
+      (click)="$event.stopPropagation()"
+    >
+      <!-- header -->
+      <div class="flex items-start justify-between gap-4 border-b border-border px-5 py-4">
+        <div class="min-w-0">
+          <h2
+            *ngIf="title"
+            class="text-base sm:text-lg font-semibold leading-tight text-foreground"
+          >
+            {{ title }}
+          </h2>
+          <p *ngIf="description" class="mt-1 text-sm text-muted-foreground">
+            {{ description }}
+          </p>
+        </div>
+
+        <button
+          #closeBtn
+          type="button"
+          class="inline-flex cursor-pointer h-9 w-9 items-center justify-center rounded-xl border border-border bg-background text-foreground/80 hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          (click)="requestClose()"
+          aria-label="Close dialog"
+        >
+          ✕
+        </button>
+      </div>
+
+      <!-- body -->
+      <div class="px-5 py-4">
+        <ng-content></ng-content>
+      </div>
+
+      <!-- footer / actions -->
+      <div class="flex items-center justify-end gap-2 border-t border-border px-5 py-4">
+        <ng-content select="[dialogActions]"></ng-content>
+      </div>
+    </section>
+  </div>
+</ng-container>
