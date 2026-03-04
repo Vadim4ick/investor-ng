@@ -15,21 +15,29 @@
     }
   </div>
 
-  <form class="space-y-4" (submit)="onSubmit($event)">
-    @if (authMode === 'register') {
-      <div class="flex flex-col gap-1">
-        <label class="text-sm font-medium text-foreground">{{
-          'authorization.name' | translate
-        }}</label>
-        <input type="text" placeholder="Your name" ubInput class="w-full" />
-      </div>
-    }
-
+  <form class="space-y-4" [formGroup]="vm.form" (submit)="onSubmit($event)">
     <div class="flex flex-col gap-1">
       <label class="text-sm font-medium text-foreground">{{
         'authorization.email' | translate
       }}</label>
-      <input type="email" placeholder="you@example.com" ubInput class="w-full" />
+      <input
+        type="email"
+        formControlName="email"
+        placeholder="you@example.com"
+        ubInput
+        class="w-full"
+      />
+
+      @if (vm.email.invalid && (vm.email.touched || vm.email.dirty)) {
+        <p class="text-sm text-destructive">
+          @if (vm.email.errors?.['required']) {
+            Email is required
+          }
+          @if (vm.email.errors?.['email']) {
+            Invalid email
+          }
+        </p>
+      }
     </div>
 
     <div class="flex flex-col gap-1">
@@ -45,7 +53,24 @@
         }
       </div>
 
-      <input type="password" placeholder="••••••••" ubInput class="w-full" />
+      <input
+        type="password"
+        placeholder="••••••••"
+        ubInput
+        class="w-full"
+        formControlName="password"
+      />
+
+      @if (vm.password.invalid && (vm.password.touched || vm.password.dirty)) {
+        <p class="text-sm text-destructive">
+          @if (vm.password.errors?.['required']) {
+            Password is required
+          }
+          @if (vm.password.errors?.['minlength']) {
+            Min 6 characters
+          }
+        </p>
+      }
     </div>
 
     @if (authMode === 'register') {
@@ -53,13 +78,34 @@
         <label class="text-sm font-medium text-foreground">{{
           'authorization.confirmPassword' | translate
         }}</label>
-        <input type="password" placeholder="••••••••" ubInput class="w-full" />
+        <input
+          type="password"
+          placeholder="••••••••"
+          ubInput
+          class="w-full"
+          formControlName="confirmPassword"
+        />
+
+        @if (
+          (vm.confirmPassword.touched || vm.confirmPassword.dirty) &&
+          vm.form.errors?.['passwordMismatch']
+        ) {
+          <p class="text-sm text-destructive">Passwords do not match</p>
+        }
       </div>
 
       <label class="flex items-center gap-2 text-sm text-muted-foreground">
-        <input type="checkbox" class="h-4 w-4 accent-primary" />
+        <input type="checkbox" class="h-4 w-4 accent-primary" formControlName="acceptTerms" />
         I agree to the <a routerLink="/terms" class="text-primary hover:underline">Terms</a>
       </label>
+
+      @if (vm.acceptTerms.invalid && (vm.acceptTerms.touched || vm.acceptTerms.dirty)) {
+        <p class="text-sm text-destructive">You must accept Terms</p>
+      }
+    }
+
+    @if (vm.serverError()) {
+      <p class="text-sm text-destructive">{{ vm.serverError() }}</p>
     }
 
     <button

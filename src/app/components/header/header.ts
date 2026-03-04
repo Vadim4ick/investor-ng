@@ -17,6 +17,7 @@ import { map } from 'rxjs/operators';
 import { AppLinkComponent } from '@/shared/ui/app-link';
 import { isPlatformBrowser } from '@angular/common';
 import { nav } from '@/shared/const/navbar.const';
+import { AuthService } from '@/services/auth.service';
 
 @Component({
   selector: 'app-header',
@@ -27,6 +28,9 @@ import { nav } from '@/shared/const/navbar.const';
 })
 export class HeaderComponent {
   private translate = inject(TranslateService);
+  private auth = inject(AuthService);
+
+  user = toSignal(this.auth.user$, { initialValue: null });
 
   mobileMenuOpen = signal(false);
 

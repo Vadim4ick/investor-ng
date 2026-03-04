@@ -1,25 +1,43 @@
-import { Component, Input, signal } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { ReactiveFormsModule } from '@angular/forms';
+
 import { UbInputDirective } from '@/shared/ui/input';
 import { UbButtonDirective } from '@/shared/ui/button';
 import { AppLinkComponent } from '@/shared/ui/app-link';
 import { TranslatePipe } from '@ngx-translate/core';
 
-type AuthMode = 'login' | 'register';
+import { LoginFormFacade, AuthMode } from './login-form.facade';
 
 @Component({
   selector: 'login-form',
-  imports: [UbInputDirective, UbButtonDirective, AppLinkComponent, TranslatePipe],
+  standalone: true,
+  imports: [
+    ReactiveFormsModule,
+    UbInputDirective,
+    UbButtonDirective,
+    AppLinkComponent,
+    TranslatePipe,
+  ],
   templateUrl: './login-form.html',
+  providers: [LoginFormFacade], // важный момент: фасад = scoped per component instance
 })
-export class LoginForm {
+export class LoginForm implements OnChanges {
   @Input() authMode: AuthMode = 'login';
+
+  constructor(public vm: LoginFormFacade) {}
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['authMode']) {
+      this.vm.setMode(this.authMode);
+    }
+  }
 
   onSubmit(e: Event) {
     e.preventDefault();
+    this.vm.submit(this.authMode);
   }
 
   loginWithTelegram() {
-    // redirect to your backend OAuth endpoint
     window.location.href = '/api/auth/telegram';
   }
 }

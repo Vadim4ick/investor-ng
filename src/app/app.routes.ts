@@ -6,6 +6,7 @@ import { SimulatorPage } from './pages/simulator-page/simulator-page';
 import { LoginPage } from './pages/login-page/login-page';
 import { RegisterPage } from './pages/register-page/register-page';
 import { Calculation } from './pages/calculation/calculation';
+import { guestGuard } from './guards/guest.guard';
 
 export const routes: Routes = [
   // редирект с корня на ru (можно сменить на en)
@@ -18,8 +19,10 @@ export const routes: Routes = [
     children: [
       { path: '', component: HomePage },
       { path: 'simulator', component: SimulatorPage },
-      { path: 'login', component: LoginPage },
-      { path: 'register', component: RegisterPage },
+
+      { path: 'login', component: LoginPage, canActivate: [guestGuard] },
+      { path: 'register', component: RegisterPage, canActivate: [guestGuard] },
+
       { path: 'calculate', component: Calculation },
     ],
   },
