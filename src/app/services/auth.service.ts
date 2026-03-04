@@ -26,6 +26,8 @@ export type User = {
   // опционально: name, role и т.д.
 };
 
+export type SessionStatus = 'loading' | 'ready';
+
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   // Подстрой под env
@@ -33,6 +35,9 @@ export class AuthService {
 
   private userSubject = new BehaviorSubject<User | null>(null);
   readonly user$ = this.userSubject.asObservable();
+
+  private statusSubject = new BehaviorSubject<SessionStatus>('loading');
+  readonly status$ = this.statusSubject.asObservable();
 
   constructor(private http: HttpClient) {}
 
@@ -43,17 +48,22 @@ export class AuthService {
     : null;
 
   initSession(): Observable<void> {
-    // если access есть — пробуем me
+    this.setStatus('loading');
+
+    const done = () => this.setStatus('ready');
+
     if (this.getAccessToken()) {
       return this.me().pipe(
         map(() => void 0),
+        tap(done),
         catchError(() =>
-          // access умер → пробуем refresh → me
           this.refresh().pipe(
             switchMap(() => this.me()),
             map(() => void 0),
+            tap(done),
             catchError(() => {
-              this.clearAuth(); // сбросить access + userSubject
+              this.clearAuth();
+              done();
               return of(void 0);
             }),
           ),
@@ -61,17 +71,23 @@ export class AuthService {
       );
     }
 
-    // access нет → можно сразу пробовать refresh (если есть cookie)
     return this.refresh().pipe(
       switchMap(() => this.me()),
       map(() => void 0),
-      catchError(() => of(void 0)),
+      tap(done),
+      catchError(() => {
+        done();
+        return of(void 0);
+      }),
     );
   }
-
   /** true если есть access в памяти/стораже */
   isAuthenticated(): boolean {
     return !!this.accessToken;
+  }
+
+  private setStatus(status: SessionStatus) {
+    this.statusSubject.next(status);
   }
 
   /** удобный геттер */

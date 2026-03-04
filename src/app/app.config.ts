@@ -20,7 +20,7 @@ import { firstValueFrom } from 'rxjs';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { routes } from './app.routes';
 import { UniversalTranslateLoader } from './shared/core/i18n/universal-translate.loader';
-import { AuthInterceptor } from './interceptors/auth.iterceptor';
+import { AuthInterceptor } from './interceptors/auth.interceptor';
 import { AuthService } from './services/auth.service';
 
 function extractLang(path?: string): 'ru' | 'en' {
@@ -70,16 +70,17 @@ export const appConfig: ApplicationConfig = {
       useFactory: initLocale,
       multi: true,
     },
+
+    // {
+    //   provide: APP_INITIALIZER,
+    //   useFactory: initAuth,
+    //   deps: [AuthService],
+    //   multi: true,
+    // },
+
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
-      multi: true,
-    },
-
-    {
-      provide: APP_INITIALIZER,
-      useFactory: initAuth,
-      deps: [AuthService],
       multi: true,
     },
   ],
