@@ -1,32 +1,43 @@
 import { Routes } from '@angular/router';
-import { HomePage } from './pages/home-page/home-page';
 import { langGuard } from './shared/core/i18n/lang.guard';
-import { LayoutComponent } from './shared/layouts/main-layout';
-import { SimulatorPage } from './pages/simulator-page/simulator-page';
-import { LoginPage } from './pages/login-page/login-page';
-import { RegisterPage } from './pages/register-page/register-page';
-import { Calculation } from './pages/calculation/calculation';
 import { guestGuard } from './guards/guest.guard';
 
 export const routes: Routes = [
-  // редирект с корня на ru (можно сменить на en)
   { path: '', pathMatch: 'full', redirectTo: 'ru' },
 
   {
     path: ':lang',
     canActivate: [langGuard],
-    component: LayoutComponent,
+    loadComponent: () => import('./shared/layouts/main-layout').then((m) => m.LayoutComponent),
     children: [
-      { path: '', component: HomePage },
-      { path: 'simulator', component: SimulatorPage },
+      {
+        path: '',
+        loadComponent: () => import('./pages/home-page/home-page').then((m) => m.HomePage),
+      },
+      {
+        path: 'simulator',
+        loadComponent: () =>
+          import('./pages/simulator-page/simulator-page').then((m) => m.SimulatorPage),
+      },
 
-      { path: 'login', component: LoginPage, canActivate: [guestGuard] },
-      { path: 'register', component: RegisterPage, canActivate: [guestGuard] },
+      {
+        path: 'login',
+        canActivate: [guestGuard],
+        loadComponent: () => import('./pages/login-page/login-page').then((m) => m.LoginPage),
+      },
+      {
+        path: 'register',
+        canActivate: [guestGuard],
+        loadComponent: () =>
+          import('./pages/register-page/register-page').then((m) => m.RegisterPage),
+      },
 
-      { path: 'calculate', component: Calculation },
+      {
+        path: 'calculate',
+        loadComponent: () => import('./pages/calculation/calculation').then((m) => m.Calculation),
+      },
     ],
   },
 
-  // fallback
   { path: '**', redirectTo: 'ru' },
 ];
