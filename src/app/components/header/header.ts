@@ -18,17 +18,26 @@ import { AppLinkComponent } from '@/shared/ui/app-link';
 import { isPlatformBrowser } from '@angular/common';
 import { nav } from '@/shared/const/navbar.const';
 import { AuthService } from '@/services/auth.service';
+import { UbButtonDirective } from '@/shared/ui/button';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [LangSwitcherComponent, ThemeToggleComponent, TranslatePipe, AppLinkComponent],
+  imports: [
+    LangSwitcherComponent,
+    ThemeToggleComponent,
+    TranslatePipe,
+    AppLinkComponent,
+    UbButtonDirective,
+  ],
   templateUrl: './header.html',
   styleUrl: './header.css',
 })
 export class HeaderComponent {
   private translate = inject(TranslateService);
   private auth = inject(AuthService);
+  private router = inject(Router);
 
   user = toSignal(this.auth.user$, { initialValue: null });
 
@@ -61,6 +70,17 @@ export class HeaderComponent {
   @HostListener('document:keydown.escape')
   onEsc() {
     this.closeMobileMenu();
+  }
+
+  logout() {
+    this.auth.logout().subscribe({
+      next: () => {
+        this.router.navigateByUrl('/');
+      },
+      error: (err) => {
+        console.error(err);
+      },
+    });
   }
 
   nav = toSignal(
