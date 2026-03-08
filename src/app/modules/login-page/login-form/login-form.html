@@ -122,18 +122,18 @@
   </form>
 
   <!-- Divider -->
-  <div class="relative my-6">
+  <!-- <div class="relative my-6">
     <div class="absolute inset-0 flex items-center">
       <div class="w-full border-t border-border"></div>
     </div>
     <div class="relative flex justify-center text-xs uppercase">
       <span class="bg-card px-3 text-muted-foreground"> {{ 'authorization.or' | translate }} </span>
     </div>
-  </div>
+  </div> -->
 
-  <button
+  <!-- <button
     type="button"
-    class="w-full h-11 flex items-center justify-center gap-3 rounded-lg border border-border bg-[#229ED9] text-white font-semibold hover:bg-[#1d8ec5] transition-colors"
+    class="w-full h-11 flex items-center cursor-pointer justify-center gap-3 rounded-lg border border-border bg-[#229ED9] text-white font-semibold hover:bg-[#1d8ec5] transition-colors"
     (click)="loginWithTelegram()"
   >
     <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
@@ -143,7 +143,9 @@
     </svg>
 
     {{ 'authorization.continueWithTelegram' | translate }}
-  </button>
+  </button> -->
+
+  <!-- <tg-login></tg-login> -->
 
   <p class="text-sm text-center text-muted-foreground mt-6">
     @if (authMode === 'login') {

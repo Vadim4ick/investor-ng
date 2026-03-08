@@ -2,6 +2,7 @@ import { inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { BehaviorSubject, Observable, catchError, map, of, switchMap, tap, throwError } from 'rxjs';
 import { isPlatformBrowser } from '@angular/common';
+import { TelegramAuthUser } from '@/shared/tg-login/tg-login';
 
 export type LoginDto = { email: string; password: string };
 export type RegisterDto = {
@@ -105,6 +106,12 @@ export class AuthService {
         tap((r) => this.setAccessToken(r.access_token)),
         switchMap(() => this.me().pipe(map(() => void 0))),
       );
+  }
+
+  telegramAuth(user: TelegramAuthUser) {
+    return this.http.post<{ access_token: string; user: any }>(`${this.API}/auth/telegram`, user, {
+      withCredentials: true,
+    });
   }
 
   /** Регистрация → ставит refresh cookie, возвращает access_token + user */

@@ -7,6 +7,7 @@ import { AppLinkComponent } from '@/shared/ui/app-link';
 import { TranslatePipe } from '@ngx-translate/core';
 
 import { LoginFormFacade, AuthMode } from './login-form.facade';
+// import { TgLoginComponent } from '@/shared/tg-login/tg-login';
 
 @Component({
   selector: 'login-form',
@@ -17,6 +18,7 @@ import { LoginFormFacade, AuthMode } from './login-form.facade';
     UbButtonDirective,
     AppLinkComponent,
     TranslatePipe,
+    // TgLoginComponent,
   ],
   templateUrl: './login-form.html',
   providers: [LoginFormFacade], // важный момент: фасад = scoped per component instance
@@ -38,6 +40,6 @@ export class LoginForm implements OnChanges {
   }
 
   loginWithTelegram() {
-    window.location.href = '/api/auth/telegram';
+    window.location.href = `http://localhost:8000/telegram/start`;
   }
 }
