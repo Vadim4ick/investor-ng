@@ -6,6 +6,7 @@ import { TelegramAuthUser } from '@/shared/tg-login/tg-login';
 import { ApiResponse } from '@/shared/types/api.types';
 import { User } from '@/shared/types/user.types';
 import { AuthData, LoginDto, RegisterDto } from '@/shared/types/auth.types';
+import { environment } from 'src/environments/environment.prod';
 
 export type AuthResponse = ApiResponse<AuthData>;
 export type LogoutResponse = ApiResponse<null>;
@@ -13,7 +14,7 @@ export type SessionStatus = 'loading' | 'ready';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private readonly API = `http://localhost:8000/auth`;
+  private readonly API = `${environment.apiUrl}/auth`;
 
   private readonly userSubject = new BehaviorSubject<User | null>(null);
   readonly user$ = this.userSubject.asObservable();
@@ -181,7 +182,7 @@ export class AuthService {
     this.statusSubject.next(status);
   }
 
-  private authHeaders(): HttpHeaders {
+  authHeaders(): HttpHeaders {
     const token = this.accessToken;
     return token ? new HttpHeaders({ Authorization: `Bearer ${token}` }) : new HttpHeaders();
   }
