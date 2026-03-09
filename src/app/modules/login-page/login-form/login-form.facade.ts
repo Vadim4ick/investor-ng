@@ -78,7 +78,7 @@ export class LoginFormFacade {
     const req$ =
       mode === 'login'
         ? this.auth.login({ email, password })
-        : this.auth.register({ email, password }).pipe(map(() => void 0));
+        : this.auth.register({ email, password });
 
     req$.subscribe({
       next: () => {

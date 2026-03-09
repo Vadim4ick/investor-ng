@@ -3,52 +3,39 @@ import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http
 import { BehaviorSubject, Observable, catchError, map, of, switchMap, tap, throwError } from 'rxjs';
 import { isPlatformBrowser } from '@angular/common';
 import { TelegramAuthUser } from '@/shared/tg-login/tg-login';
+import { ApiResponse } from '@/shared/types/api.types';
+import { User } from '@/shared/types/user.types';
+import { AuthData, LoginDto, RegisterDto } from '@/shared/types/auth.types';
 
-export type LoginDto = { email: string; password: string };
-export type RegisterDto = {
-  email: string;
-  password: string;
-  // добавь поля из CreateUserDto при необходимости:
-  // name?: string;
-};
-
-export type TokenResponseDto = { access_token: string };
-export type RegisterResponse = { access_token: string; user: User };
-
-export type JwtPayloadUser = {
-  sub: number;
-  email: string;
-  // любые поля, которые ты кладёшь в access payload / req.user
-};
-
-export type User = {
-  id: number;
-  email: string;
-  // опционально: name, role и т.д.
-};
-
+export type AuthResponse = ApiResponse<AuthData>;
+export type LogoutResponse = ApiResponse<null>;
 export type SessionStatus = 'loading' | 'ready';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  // Подстрой под env
-  private readonly API = 'http://localhost:8000';
+  private readonly API = `http://localhost:8000/auth`;
 
-  private userSubject = new BehaviorSubject<User | null>(null);
+  private readonly userSubject = new BehaviorSubject<User | null>(null);
   readonly user$ = this.userSubject.asObservable();
 
-  private statusSubject = new BehaviorSubject<SessionStatus>('loading');
+  private readonly statusSubject = new BehaviorSubject<SessionStatus>('loading');
   readonly status$ = this.statusSubject.asObservable();
 
-  constructor(private http: HttpClient) {}
-
-  private platformId = inject(PLATFORM_ID);
+  private readonly platformId = inject(PLATFORM_ID);
 
   private accessToken: string | null = isPlatformBrowser(this.platformId)
     ? localStorage.getItem('access_token')
     : null;
 
+  constructor(private readonly http: HttpClient) {}
+
   initSession(): Observable<void> {
+    if (!this.isBrowser) {
+      this.userSubject.next(null);
+      this.setStatus('ready');
+      return of(void 0);
+    }
+
     this.setStatus('loading');
 
     const done = () => this.setStatus('ready');
@@ -82,77 +69,83 @@ export class AuthService {
       }),
     );
   }
-  /** true если есть access в памяти/стораже */
+
   isAuthenticated(): boolean {
     return !!this.accessToken;
   }
 
-  private setStatus(status: SessionStatus) {
-    this.statusSubject.next(status);
-  }
-
-  /** удобный геттер */
   getAccessToken(): string | null {
     return this.accessToken;
   }
 
-  /** Логин → ставит refresh cookie на бэке, возвращает access_token */
-  login(dto: LoginDto): Observable<void> {
+  login(dto: LoginDto): Observable<User | null> {
     return this.http
-      .post<TokenResponseDto>(`${this.API}/login`, dto, {
+      .post<AuthResponse>(`${this.API}/login`, dto, {
         withCredentials: true,
       })
       .pipe(
-        tap((r) => this.setAccessToken(r.access_token)),
-        switchMap(() => this.me().pipe(map(() => void 0))),
+        tap((response) => this.setAccessToken(response.data.accessToken)),
+        switchMap(() => this.me()),
       );
   }
 
-  telegramAuth(user: TelegramAuthUser) {
-    return this.http.post<{ access_token: string; user: any }>(`${this.API}/auth/telegram`, user, {
-      withCredentials: true,
-    });
-  }
-
-  /** Регистрация → ставит refresh cookie, возвращает access_token + user */
-  register(dto: RegisterDto): Observable<User> {
+  register(dto: RegisterDto): Observable<User | null> {
     return this.http
-      .post<RegisterResponse>(`${this.API}/register`, dto, {
+      .post<AuthResponse>(`${this.API}/register`, dto, {
         withCredentials: true,
       })
       .pipe(
-        tap((r) => this.setAccessToken(r.access_token)),
-        tap((r) => this.userSubject.next(r.user)),
-        map((r) => r.user),
+        tap((response) => this.setAccessToken(response.data.accessToken)),
+        tap((response) => {
+          if (response.data.user) {
+            this.userSubject.next(response.data.user);
+          }
+        }),
+        map((response) => response.data.user),
       );
   }
 
-  /** /me (нужен Authorization: Bearer access) */
-  me(): Observable<User> {
+  telegramAuth(user: TelegramAuthUser): Observable<User | null> {
     return this.http
-      .get<User>(`${this.API}/me`, {
+      .post<AuthResponse>(`${this.API}/telegram`, user, {
+        withCredentials: true,
+      })
+      .pipe(
+        tap((response) => this.setAccessToken(response.data.accessToken)),
+        tap((response) => {
+          if (response.data.user) {
+            this.userSubject.next(response.data.user);
+          }
+        }),
+        map((response) => response.data.user),
+      );
+  }
+
+  me(): Observable<User | null> {
+    return this.http
+      .get<ApiResponse<User>>(`${this.API}/me`, {
         headers: this.authHeaders(),
       })
-      .pipe(tap((u) => this.userSubject.next(u)));
-  }
-
-  /** Refresh по httpOnly cookie → новый access_token, и refresh cookie ротируется */
-  refresh(): Observable<string> {
-    return this.http
-      .post<TokenResponseDto>(`${this.API}/refresh`, null, {
-        withCredentials: true,
-      })
       .pipe(
-        tap((r) => this.setAccessToken(r.access_token)),
-        map((r) => r.access_token),
+        map((response) => response.data),
+        tap((user) => this.userSubject.next(user)),
       );
   }
 
-  /** Logout → чистит refresh cookie на бэке и на клиенте, сбрасывает состояние */
-  logout(): Observable<void> {
-    // endpoint защищён JwtAuthGuard → нужен access
+  refresh(): Observable<string> {
     return this.http
-      .post<{ ok: true }>(`${this.API}/logout`, null, {
+      .post<AuthResponse>(`${this.API}/refresh`, null, {
+        withCredentials: true,
+      })
+      .pipe(
+        tap((response) => this.setAccessToken(response.data.accessToken)),
+        map((response) => response.data.accessToken),
+      );
+  }
+
+  logout(): Observable<void> {
+    return this.http
+      .post<LogoutResponse>(`${this.API}/logout`, null, {
         withCredentials: true,
         headers: this.authHeaders(),
       })
@@ -160,14 +153,12 @@ export class AuthService {
         tap(() => this.clearAuth()),
         map(() => void 0),
         catchError((err) => {
-          // даже если access умер — локально всё равно чистим
           this.clearAuth();
           return throwError(() => err);
         }),
       );
   }
 
-  /** Обёртка: если access умер, пытаемся refresh и повторяем запрос */
   withAutoRefresh<T>(requestFactory: () => Observable<T>): Observable<T> {
     return requestFactory().pipe(
       catchError((err: unknown) => {
@@ -180,12 +171,15 @@ export class AuthService {
             }),
           );
         }
+
         return throwError(() => err);
       }),
     );
   }
 
-  // ---------- helpers ----------
+  private setStatus(status: SessionStatus) {
+    this.statusSubject.next(status);
+  }
 
   private authHeaders(): HttpHeaders {
     const token = this.accessToken;
@@ -197,15 +191,17 @@ export class AuthService {
   }
 
   private setAccessToken(token: string) {
-    if (!this.isBrowser) return;
     this.accessToken = token;
+
+    if (!this.isBrowser) return;
     localStorage.setItem('access_token', token);
   }
 
   private clearAuth() {
-    if (!this.isBrowser) return;
     this.accessToken = null;
-    localStorage.removeItem('access_token');
     this.userSubject.next(null);
+
+    if (!this.isBrowser) return;
+    localStorage.removeItem('access_token');
   }
 }
