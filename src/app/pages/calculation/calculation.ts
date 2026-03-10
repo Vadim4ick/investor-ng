@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, effect, inject, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { AppContainerComponent } from '@/shared/layouts/app-container';
 import {
   UbPaginationEllipsisComponent,
@@ -17,8 +17,7 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { UbMoneyInputDirective } from '@/shared/ui/ub-money-input';
 import { TransactionsService } from '@/services/transactions.service';
 import { Transaction, TransactionTypeVariant } from '@/shared/types/transactions.types';
-import { combineLatest, filter, take } from 'rxjs';
-import { AuthService } from '@/services/auth.service';
+import { isPlatformBrowser } from '@angular/common';
 
 @Component({
   selector: 'calculation',
@@ -42,7 +41,6 @@ import { AuthService } from '@/services/auth.service';
 })
 export class Calculation {
   private readonly transactionsService = inject(TransactionsService);
-  private readonly authService = inject(AuthService);
 
   isLoading = signal(false);
   transactions = signal<Transaction[]>([]);
@@ -51,15 +49,7 @@ export class Calculation {
   open = false;
 
   ngOnInit(): void {
-    combineLatest([this.authService.status$, this.authService.user$])
-      .pipe(
-        filter(([status]) => status === 'ready'),
-        take(1),
-      )
-      .subscribe(([, user]) => {
-        if (!user) return;
-        this.loadTransactions();
-      });
+    this.loadTransactions();
   }
 
   loadTransactions(): void {

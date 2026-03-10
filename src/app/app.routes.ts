@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { langGuard } from './shared/core/i18n/lang.guard';
 import { guestGuard } from './guards/guest.guard';
+import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'ru' },
@@ -34,6 +35,7 @@ export const routes: Routes = [
 
       {
         path: 'calculate',
+        canActivate: [authGuard],
         loadComponent: () => import('./pages/calculation/calculation').then((m) => m.Calculation),
       },
     ],

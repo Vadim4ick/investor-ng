@@ -1,6 +1,6 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { EMPTY, Observable } from 'rxjs';
 
 import { ApiResponse } from '@/shared/types/api.types';
 import {
@@ -9,6 +9,7 @@ import {
   UpdateTransactionDto,
 } from '@/shared/types/transactions.types';
 import { environment } from 'src/environments/environment';
+import { isPlatformBrowser } from '@angular/common';
 
 export interface MessageResponse {
   message: string;
@@ -19,10 +20,15 @@ export interface MessageResponse {
 })
 export class TransactionsService {
   private readonly API = `${environment.apiUrl}/transactions`;
+  private readonly platformId = inject(PLATFORM_ID);
 
   constructor(private readonly http: HttpClient) {}
 
   getAll(): Observable<ApiResponse<Transaction[]>> {
+    if (!isPlatformBrowser(this.platformId)) {
+      return EMPTY;
+    }
+
     return this.http.get<ApiResponse<Transaction[]>>(this.API);
   }
 
