@@ -17,7 +17,8 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { UbMoneyInputDirective } from '@/shared/ui/ub-money-input';
 import { TransactionsService } from '@/services/transactions.service';
 import { Transaction, TransactionTypeVariant } from '@/shared/types/transactions.types';
-import { isPlatformBrowser } from '@angular/common';
+import { CategoriesService } from '@/services/categories.service';
+import { Category } from '@/shared/types/categories.types';
 
 @Component({
   selector: 'calculation',
@@ -41,6 +42,9 @@ import { isPlatformBrowser } from '@angular/common';
 })
 export class Calculation {
   private readonly transactionsService = inject(TransactionsService);
+  private readonly categoriesService = inject(CategoriesService);
+
+  options = signal<{ value: string; label: string }[]>([]);
 
   isLoading = signal(false);
   transactions = signal<Transaction[]>([]);
@@ -50,6 +54,7 @@ export class Calculation {
 
   ngOnInit(): void {
     this.loadTransactions();
+    this.loadCategories();
   }
 
   loadTransactions(): void {
@@ -69,6 +74,22 @@ export class Calculation {
     });
   }
 
+  loadCategories(): void {
+    this.categoriesService.getAll().subscribe({
+      next: (response) => {
+        this.options.set(
+          (response.data ?? []).map((category) => ({
+            label: category.name,
+            value: String(category.id),
+          })),
+        );
+      },
+      error: (error) => {
+        console.error('Ошибка загрузки категорий:', error);
+      },
+    });
+  }
+
   isIncome(type: TransactionTypeVariant): boolean {
     return type === 'INCOME';
   }
@@ -77,12 +98,6 @@ export class Calculation {
     const value = Number(amount);
     return new Intl.NumberFormat('ru-RU').format(Math.abs(value));
   }
-
-  options = [
-    { label: 'Еда', value: 'food' },
-    { label: 'Шоппинг', value: 'shop' },
-    { label: 'Квартира', value: 'apartment', disabled: false },
-  ];
 
   categoryCtrl = new FormControl<string | null>(null);
 
