@@ -52,12 +52,11 @@
                 @for (transaction of transactions(); track transaction.id) {
                   <tr class="border-b border-border/70">
                     <td class="px-2 py-3">
-                      {{ transaction.createdAt }}
+                      {{ transaction.createdAt | date: 'dd.MM.yyyy HH:mm' }}
                     </td>
 
                     <td class="px-2 py-3">
-                      <!-- {{ transaction. }} -->
-                      category
+                      {{ transaction.category.name }}
                     </td>
 
                     <td class="px-2 py-3">
@@ -281,19 +280,38 @@
       <label class="flex flex-col gap-1">
         <span class="text-sm font-medium">Описание</span>
 
-        <input ubInput type="text" placeholder="Покупка в Магните" class="w-full" />
+        <input
+          ubInput
+          type="text"
+          placeholder="Покупка в Магните"
+          class="w-full"
+          [formControl]="descriptionCtrl"
+        />
       </label>
 
       <label class="flex flex-col gap-1">
         <span class="text-sm font-medium">Цена</span>
 
-        <input ubInput ubMoneyInput type="text" placeholder="1 000" class="w-full" />
+        <input
+          ubInput
+          ubMoneyInput
+          type="text"
+          placeholder="1 000"
+          class="w-full"
+          [formControl]="amountCtrl"
+        />
       </label>
+
+      @if (createErrorMessage()) {
+        <p class="text-sm text-red-500">{{ createErrorMessage() }}</p>
+      }
     </div>
 
     <div dialogActions class="flex items-center gap-2">
       <button ubButton variant="secondary" (click)="open = false">Отмена</button>
-      <button ubButton (click)="confirm()">Сохранить</button>
+      <button ubButton [disabled]="isCreating()" (click)="confirm()">
+        {{ isCreating() ? 'Сохранение...' : 'Сохранить' }}
+      </button>
     </div>
   </app-dialog>
 </section>

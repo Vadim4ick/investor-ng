@@ -1,3 +1,5 @@
+import { Category } from './categories.types';
+
 export type TransactionTypeVariant = 'EXPENDITURE' | 'INCOME';
 
 export interface Transaction {
@@ -5,6 +7,7 @@ export interface Transaction {
   price: number;
   type: TransactionTypeVariant;
   categoryId: number;
+  category: Category;
   description?: string | null;
   createdAt: string;
   updatedAt: string;
@@ -13,7 +16,6 @@ export interface Transaction {
 export interface CreateTransactionDto {
   price: number;
   type: TransactionTypeVariant;
-  userId: number;
   categoryId: number;
   description?: string;
 }
