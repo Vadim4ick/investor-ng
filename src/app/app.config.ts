@@ -8,9 +8,9 @@ import {
   LOCALE_ID,
 } from '@angular/core';
 import { isPlatformServer } from '@angular/common';
-import { provideRouter, withEnabledBlockingInitialNavigation } from '@angular/router';
+import { provideRouter } from '@angular/router';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
-import { HTTP_INTERCEPTORS, provideHttpClient, withFetch } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import {
   provideTranslateLoader,
   provideTranslateService,
@@ -21,15 +21,10 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 import { routes } from './app.routes';
 import { UniversalTranslateLoader } from './shared/core/i18n/universal-translate.loader';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
-import { AuthService } from './services/auth.service';
 
 function extractLang(path?: string): 'ru' | 'en' {
   const first = (path || '').split('/').filter(Boolean)[0]?.toLowerCase();
   return first === 'en' ? 'en' : 'ru';
-}
-
-export function initAuth(auth: AuthService) {
-  return () => firstValueFrom(auth.initSession());
 }
 
 function initLocale() {
@@ -61,7 +56,7 @@ export const appConfig: ApplicationConfig = {
     provideAnimations(),
 
     provideClientHydration(withEventReplay()),
-    provideHttpClient(withFetch()),
+    provideHttpClient(withInterceptorsFromDi()),
     provideTranslateService({
       loader: provideTranslateLoader(UniversalTranslateLoader),
       fallbackLang: 'ru',
@@ -71,13 +66,6 @@ export const appConfig: ApplicationConfig = {
       useFactory: initLocale,
       multi: true,
     },
-
-    // {
-    //   provide: APP_INITIALIZER,
-    //   useFactory: initAuth,
-    //   deps: [AuthService],
-    //   multi: true,
-    // },
 
     {
       provide: HTTP_INTERCEPTORS,

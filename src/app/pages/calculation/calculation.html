@@ -36,30 +36,55 @@
               </tr>
             </thead>
             <tbody>
-              <tr class="border-b border-border/70">
-                <td class="px-2 py-3">25.02.2026</td>
-                <td class="px-2 py-3">Еда</td>
-                <td class="px-2 py-3">Супермаркет</td>
-                <td class="px-2 py-3 text-right font-medium text-rose-600 dark:text-rose-300">
-                  -3 450 ₽
-                </td>
-              </tr>
-              <tr class="border-b border-border/70">
-                <td class="px-2 py-3">24.02.2026</td>
-                <td class="px-2 py-3">Фриланс</td>
-                <td class="px-2 py-3">Оплата проекта</td>
-                <td class="px-2 py-3 text-right font-medium text-emerald-600 dark:text-emerald-300">
-                  +9 000 ₽
-                </td>
-              </tr>
-              <tr>
-                <td class="px-2 py-3">23.02.2026</td>
-                <td class="px-2 py-3">Транспорт</td>
-                <td class="px-2 py-3">Такси и метро</td>
-                <td class="px-2 py-3 text-right font-medium text-rose-600 dark:text-rose-300">
-                  -1 680 ₽
-                </td>
-              </tr>
+              @if (isLoading()) {
+                <tr>
+                  <td colspan="5" class="px-2 py-6 text-center text-muted-foreground">
+                    Загрузка...
+                  </td>
+                </tr>
+              } @else if (!transactions().length) {
+                <tr>
+                  <td colspan="5" class="px-2 py-6 text-center text-muted-foreground">
+                    Транзакций пока нет
+                  </td>
+                </tr>
+              } @else {
+                @for (transaction of transactions(); track transaction.id) {
+                  <tr class="border-b border-border/70">
+                    <td class="px-2 py-3">
+                      {{ transaction.createdAt }}
+                    </td>
+
+                    <td class="px-2 py-3">
+                      <!-- {{ transaction. }} -->
+                      category
+                    </td>
+
+                    <td class="px-2 py-3">
+                      {{ transaction.description }}
+                    </td>
+
+                    <td
+                      class="px-2 py-3 text-right font-medium"
+                      [class.text-emerald-600]="isIncome(transaction.type)"
+                      [class.dark:text-emerald-300]="isIncome(transaction.type)"
+                      [class.text-rose-600]="!isIncome(transaction.type)"
+                      [class.dark:text-rose-300]="!isIncome(transaction.type)"
+                    >
+                      {{ isIncome(transaction.type) ? '+' : '-' }}
+                      {{ formatAmount(transaction.price) }} ₽
+                    </td>
+
+                    <td class="px-2 py-3">
+                      <div class="flex items-center justify-end gap-2">
+                        <button ubButton type="button" variant="outline">Изменить</button>
+
+                        <button ubButton type="button" variant="destructive">Удалить</button>
+                      </div>
+                    </td>
+                  </tr>
+                }
+              }
             </tbody>
           </table>
 
@@ -250,7 +275,7 @@
         placeholder="Выберите категорию"
         label="Категория"
         [searchable]="false"
-        [formControl]="cityCtrl"
+        [formControl]="categoryCtrl"
       ></app-select>
 
       <label class="flex flex-col gap-1">

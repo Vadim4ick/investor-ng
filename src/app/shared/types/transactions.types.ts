@@ -1,4 +1,4 @@
-type TransactionTypeVariant = 'EXPENDITURE' | 'INCOME';
+export type TransactionTypeVariant = 'EXPENDITURE' | 'INCOME';
 
 export interface Transaction {
   id: number;

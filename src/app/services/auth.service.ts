@@ -123,14 +123,10 @@ export class AuthService {
   }
 
   me(): Observable<User | null> {
-    return this.http
-      .get<ApiResponse<User>>(`${this.API}/me`, {
-        headers: this.authHeaders(),
-      })
-      .pipe(
-        map((response) => response.data),
-        tap((user) => this.userSubject.next(user)),
-      );
+    return this.http.get<ApiResponse<User>>(`${this.API}/me`).pipe(
+      map((response) => response.data),
+      tap((user) => this.userSubject.next(user)),
+    );
   }
 
   refresh(): Observable<string> {
@@ -145,34 +141,11 @@ export class AuthService {
   }
 
   logout(): Observable<void> {
-    return this.http
-      .post<LogoutResponse>(`${this.API}/logout`, null, {
-        withCredentials: true,
-        headers: this.authHeaders(),
-      })
-      .pipe(
-        tap(() => this.clearAuth()),
-        map(() => void 0),
-        catchError((err) => {
-          this.clearAuth();
-          return throwError(() => err);
-        }),
-      );
-  }
-
-  withAutoRefresh<T>(requestFactory: () => Observable<T>): Observable<T> {
-    return requestFactory().pipe(
-      catchError((err: unknown) => {
-        if (err instanceof HttpErrorResponse && err.status === 401) {
-          return this.refresh().pipe(
-            switchMap(() => requestFactory()),
-            catchError((e) => {
-              this.clearAuth();
-              return throwError(() => e);
-            }),
-          );
-        }
-
+    return this.http.post<LogoutResponse>(`${this.API}/logout`, null).pipe(
+      tap(() => this.clearAuth()),
+      map(() => void 0),
+      catchError((err) => {
+        this.clearAuth();
         return throwError(() => err);
       }),
     );
@@ -180,11 +153,6 @@ export class AuthService {
 
   private setStatus(status: SessionStatus) {
     this.statusSubject.next(status);
-  }
-
-  authHeaders(): HttpHeaders {
-    const token = this.accessToken;
-    return token ? new HttpHeaders({ Authorization: `Bearer ${token}` }) : new HttpHeaders();
   }
 
   private get isBrowser() {

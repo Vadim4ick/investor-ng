@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-import { AuthService } from '@/services/auth.service';
 import { ApiResponse } from '@/shared/types/api.types';
 import {
   CreateTransactionDto,
@@ -21,48 +20,25 @@ export interface MessageResponse {
 export class TransactionsService {
   private readonly API = `${environment.apiUrl}/transactions`;
 
-  constructor(
-    private readonly http: HttpClient,
-    private readonly authService: AuthService,
-  ) {}
+  constructor(private readonly http: HttpClient) {}
 
   getAll(): Observable<ApiResponse<Transaction[]>> {
-    return this.authService.withAutoRefresh(() =>
-      this.http.get<ApiResponse<Transaction[]>>(this.API, {
-        headers: this.authService.authHeaders(),
-      }),
-    );
+    return this.http.get<ApiResponse<Transaction[]>>(this.API);
   }
 
   getById(id: number): Observable<Transaction> {
-    return this.authService.withAutoRefresh(() =>
-      this.http.get<Transaction>(`${this.API}/${id}`, {
-        headers: this.authService.authHeaders(),
-      }),
-    );
+    return this.http.get<Transaction>(`${this.API}/${id}`);
   }
 
   create(dto: CreateTransactionDto): Observable<ApiResponse<Transaction>> {
-    return this.authService.withAutoRefresh(() =>
-      this.http.post<ApiResponse<Transaction>>(this.API, dto, {
-        headers: this.authService.authHeaders(),
-      }),
-    );
+    return this.http.post<ApiResponse<Transaction>>(this.API, dto);
   }
 
   update(id: number, dto: UpdateTransactionDto): Observable<Transaction> {
-    return this.authService.withAutoRefresh(() =>
-      this.http.patch<Transaction>(`${this.API}/${id}`, dto, {
-        headers: this.authService.authHeaders(),
-      }),
-    );
+    return this.http.patch<Transaction>(`${this.API}/${id}`, dto);
   }
 
   remove(id: number): Observable<ApiResponse<MessageResponse>> {
-    return this.authService.withAutoRefresh(() =>
-      this.http.delete<ApiResponse<MessageResponse>>(`${this.API}/${id}`, {
-        headers: this.authService.authHeaders(),
-      }),
-    );
+    return this.http.delete<ApiResponse<MessageResponse>>(`${this.API}/${id}`);
   }
 }

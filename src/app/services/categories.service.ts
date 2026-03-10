@@ -23,42 +23,22 @@ export class CategoriesService {
   ) {}
 
   getAll(): Observable<ApiResponse<Category[]>> {
-    return this.authService.withAutoRefresh(() =>
-      this.http.get<ApiResponse<Category[]>>(this.API, {
-        headers: this.authService.authHeaders(),
-      }),
-    );
+    return this.http.get<ApiResponse<Category[]>>(this.API);
   }
 
   getById(id: number): Observable<ApiResponse<Category>> {
-    return this.authService.withAutoRefresh(() =>
-      this.http.get<ApiResponse<Category>>(`${this.API}/${id}`, {
-        headers: this.authService.authHeaders(),
-      }),
-    );
+    return this.http.get<ApiResponse<Category>>(`${this.API}/${id}`);
   }
 
   create(dto: CreateCategoryDto): Observable<ApiResponse<Category>> {
-    return this.authService.withAutoRefresh(() =>
-      this.http.post<ApiResponse<Category>>(this.API, dto, {
-        headers: this.authService.authHeaders(),
-      }),
-    );
+    return this.http.post<ApiResponse<Category>>(this.API, dto);
   }
 
   update(id: number, dto: UpdateCategoryDto): Observable<ApiResponse<Category>> {
-    return this.authService.withAutoRefresh(() =>
-      this.http.patch<ApiResponse<Category>>(`${this.API}/${id}`, dto, {
-        headers: this.authService.authHeaders(),
-      }),
-    );
+    return this.http.patch<ApiResponse<Category>>(`${this.API}/${id}`, dto);
   }
 
   remove(id: number): Observable<ApiResponse<MessageResponse>> {
-    return this.authService.withAutoRefresh(() =>
-      this.http.delete<ApiResponse<MessageResponse>>(`${this.API}/${id}`, {
-        headers: this.authService.authHeaders(),
-      }),
-    );
+    return this.http.delete<ApiResponse<MessageResponse>>(`${this.API}/${id}`);
   }
 }
