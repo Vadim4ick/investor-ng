@@ -2,7 +2,7 @@ import { inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { EMPTY, Observable } from 'rxjs';
 
-import { ApiResponse } from '@/shared/types/api.types';
+import { ApiResponse, PaginatedResponse } from '@/shared/types/api.types';
 import {
   CreateTransactionDto,
   Transaction,
@@ -24,12 +24,12 @@ export class TransactionsService {
 
   constructor(private readonly http: HttpClient) {}
 
-  getAll(): Observable<ApiResponse<Transaction[]>> {
+  getAll(): Observable<PaginatedResponse<Transaction>> {
     if (!isPlatformBrowser(this.platformId)) {
       return EMPTY;
     }
 
-    return this.http.get<ApiResponse<Transaction[]>>(this.API);
+    return this.http.get<PaginatedResponse<Transaction>>(this.API);
   }
 
   getById(id: number): Observable<Transaction> {

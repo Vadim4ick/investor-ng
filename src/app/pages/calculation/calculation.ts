@@ -68,7 +68,7 @@ export class Calculation {
 
     this.transactionsService.getAll().subscribe({
       next: (response) => {
-        this.transactions.set(response.data ?? []);
+        this.transactions.set(response.data.items ?? []);
         this.isLoading.set(false);
       },
       error: (error) => {
