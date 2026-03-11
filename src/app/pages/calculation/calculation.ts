@@ -12,7 +12,6 @@ import {
 import { Dialog } from '@/shared/ui/dialog/dialog';
 import { UbButtonDirective } from '@/shared/ui/button';
 import { UbInputDirective } from '@/shared/ui/input';
-import { CustomSelectComponent } from '@/shared/ui/select/select';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { UbMoneyInputDirective } from '@/shared/ui/ub-money-input';
 import { TransactionsService } from '@/services/transactions.service';
@@ -41,7 +40,6 @@ import { PaginationType, PaginatedResponse } from '@/shared/types/api.types';
     UbButtonDirective,
     ReactiveFormsModule,
     UbInputDirective,
-    CustomSelectComponent,
     UbMoneyInputDirective,
   ],
   templateUrl: './calculation.html',
@@ -189,6 +187,16 @@ export class Calculation {
       },
     });
   }
+
+  deleteCategory(categoryId: string) {
+    this.options.update((list) => list.filter((c) => c.value !== categoryId));
+
+    if (this.categoryCtrl.value === categoryId) {
+      this.categoryCtrl.setValue(null);
+    }
+  }
+
+  openCreateCategory() {}
 
   goToPage(page: number): void {
     const pagination = this.meta();
