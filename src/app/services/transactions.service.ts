@@ -24,12 +24,12 @@ export class TransactionsService {
 
   constructor(private readonly http: HttpClient) {}
 
-  getAll(): Observable<PaginatedResponse<Transaction>> {
+  getAll(page: number, limit: number): Observable<PaginatedResponse<Transaction>> {
     if (!isPlatformBrowser(this.platformId)) {
       return EMPTY;
     }
 
-    return this.http.get<PaginatedResponse<Transaction>>(this.API);
+    return this.http.get<PaginatedResponse<Transaction>>(this.API, { params: { page, limit } });
   }
 
   getById(id: number): Observable<Transaction> {

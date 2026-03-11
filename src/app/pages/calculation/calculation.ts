@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { AppContainerComponent } from '@/shared/layouts/app-container';
 import {
   UbPaginationEllipsisComponent,
@@ -23,6 +23,7 @@ import {
 } from '@/shared/types/transactions.types';
 import { CategoriesService } from '@/services/categories.service';
 import { DatePipe } from '@angular/common';
+import { PaginationType, PaginatedResponse } from '@/shared/types/api.types';
 
 @Component({
   selector: 'calculation',
@@ -49,11 +50,17 @@ export class Calculation {
   private readonly transactionsService = inject(TransactionsService);
   private readonly categoriesService = inject(CategoriesService);
 
+  private readonly transactionsCache = new Map<string, PaginatedResponse<Transaction>>();
+
   options = signal<{ value: string; label: string }[]>([]);
 
   isLoading = signal(false);
   transactions = signal<Transaction[]>([]);
   errorMessage = signal('');
+  meta = signal<PaginationType | null>(null);
+
+  currentPage = signal(1);
+  readonly limit = 5;
 
   open = false;
 
@@ -62,13 +69,39 @@ export class Calculation {
     this.loadCategories();
   }
 
-  loadTransactions(): void {
+  private getCacheKey(page: number, limit: number): string {
+    return `${page}-${limit}`;
+  }
+
+  private setTransactionsState(response: PaginatedResponse<Transaction>): void {
+    this.transactions.set(response.data.items ?? []);
+    this.meta.set(response.data.meta);
+    this.currentPage.set(response.data.meta.page);
+  }
+
+  private clearTransactionsCache(): void {
+    this.transactionsCache.clear();
+  }
+
+  loadTransactions(page = this.currentPage(), force = false): void {
+    const cacheKey = this.getCacheKey(page, this.limit);
+
+    if (!force) {
+      const cachedResponse = this.transactionsCache.get(cacheKey);
+
+      if (cachedResponse) {
+        this.setTransactionsState(cachedResponse);
+        return;
+      }
+    }
+
     this.isLoading.set(true);
     this.errorMessage.set('');
 
-    this.transactionsService.getAll().subscribe({
+    this.transactionsService.getAll(page, this.limit).subscribe({
       next: (response) => {
-        this.transactions.set(response.data.items ?? []);
+        this.transactionsCache.set(cacheKey, response);
+        this.setTransactionsState(response);
         this.isLoading.set(false);
       },
       error: (error) => {
@@ -144,7 +177,10 @@ export class Calculation {
         this.isCreating.set(false);
         this.open = false;
         this.resetCreateForm();
-        this.loadTransactions();
+
+        this.clearTransactionsCache();
+        this.currentPage.set(1);
+        this.loadTransactions(1, true);
       },
       error: (error) => {
         console.error('Ошибка создания транзакции:', error);
@@ -153,4 +189,62 @@ export class Calculation {
       },
     });
   }
+
+  goToPage(page: number): void {
+    const pagination = this.meta();
+
+    if (!pagination) return;
+    if (page < 1 || page > pagination.totalPages || page === this.currentPage()) return;
+
+    this.loadTransactions(page);
+  }
+
+  goToPrevPage(): void {
+    const pagination = this.meta();
+    if (!pagination?.hasPrevPage) return;
+
+    this.goToPage(this.currentPage() - 1);
+  }
+
+  goToNextPage(): void {
+    const pagination = this.meta();
+    if (!pagination?.hasNextPage) return;
+
+    this.goToPage(this.currentPage() + 1);
+  }
+
+  visiblePages = computed(() => {
+    const pagination = this.meta();
+    if (!pagination) return [];
+
+    const totalPages = pagination.totalPages;
+    const current = this.currentPage();
+    const maxVisible = 5;
+
+    if (totalPages <= maxVisible) {
+      return Array.from({ length: totalPages }, (_, i) => i + 1);
+    }
+
+    let start = Math.max(1, current - 2);
+    let end = Math.min(totalPages, start + maxVisible - 1);
+
+    if (end - start + 1 < maxVisible) {
+      start = Math.max(1, end - maxVisible + 1);
+    }
+
+    return Array.from({ length: end - start + 1 }, (_, i) => start + i);
+  });
+
+  showLeftEllipsis = computed(() => {
+    const pages = this.visiblePages();
+    return pages.length > 0 && pages[0] > 2;
+  });
+
+  showRightEllipsis = computed(() => {
+    const pages = this.visiblePages();
+    const pagination = this.meta();
+    if (!pagination || pages.length === 0) return false;
+
+    return pages[pages.length - 1] < pagination.totalPages - 1;
+  });
 }
