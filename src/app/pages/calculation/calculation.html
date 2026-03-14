@@ -22,7 +22,9 @@
         <div class="mb-4 flex items-center justify-between">
           <h2 class="text-xl font-semibold">Последние операции</h2>
 
-          <button ubButton type="button" (click)="open = true">Добавить операцию</button>
+          <button ubButton type="button" (click)="openModalCreateTransaction()">
+            Добавить операцию
+          </button>
         </div>
 
         <div class="overflow-x-auto">
@@ -320,9 +322,8 @@
   </app-container>
 
   <modal-create-transaction
-    [open]="open"
+    [(open)]="open"
     [options]="options()"
-    (openChange)="open = $event"
     (created)="handleTransactionCreated()"
   ></modal-create-transaction>
 </section>

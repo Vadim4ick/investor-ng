@@ -50,9 +50,9 @@ export class Calculation {
     this.transactionsCache.clear();
   }
 
-  open = false;
+  open = signal(false);
 
-  options = signal<{ value: string; label: string }[]>([]);
+  options = signal<{ value: string; label: string; userId: number | null }[]>([]);
 
   isLoading = signal(false);
   transactions = signal<Transaction[]>([]);
@@ -113,6 +113,7 @@ export class Calculation {
           (response.data ?? []).map((category) => ({
             label: category.name,
             value: String(category.id),
+            userId: category.userId,
           })),
         );
       },
@@ -193,5 +194,9 @@ export class Calculation {
     this.clearTransactionsCache();
     this.currentPage.set(1);
     this.loadTransactions(1, true);
+  }
+
+  openModalCreateTransaction() {
+    this.open.set(true);
   }
 }

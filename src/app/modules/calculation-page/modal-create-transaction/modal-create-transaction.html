@@ -1,6 +1,6 @@
 <app-dialog
   [open]="open()"
-  (openChange)="open.set($event)"
+  (openChange)="closeModal()"
   title="Добавить операцию"
   description="Укажите название операции, ее категорию и сумму."
   size="md"
@@ -29,23 +29,50 @@
           >
             {{ option.label }}
 
-            <span
-              class="ml-1 text-xs opacity-70 hover:opacity-100 cursor-pointer"
-              (click)="deleteCategory(option.value); $event.stopPropagation()"
-            >
-              ✕
-            </span>
+            @if (!createCategory() && option.userId !== null) {
+              <span
+                class="ml-1 text-xs opacity-70 hover:opacity-100 cursor-pointer"
+                (click)="deleteCategory(option.value); $event.stopPropagation()"
+              >
+                ✕
+              </span>
+            }
           </button>
         }
 
         <button
+          [disabled]="createCategory()"
           type="button"
-          class="rounded-full border px-3 py-1.5 text-sm text-muted-foreground cursor-pointer"
-          (click)="openCreateCategory()"
+          class="rounded-full border px-3 py-1.5 text-sm text-muted-foreground cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed"
+          (click)="onCreateCategory()"
         >
           + Добавить
         </button>
       </div>
+
+      @if (createCategory()) {
+        <div class="flex flex-col gap-2 mt-2">
+          <label class="flex flex-col gap-1">
+            <span class="text-sm font-medium">Название категории</span>
+
+            <input
+              ubInput
+              type="text"
+              class="w-full"
+              placeholder="Зал"
+              [formControl]="newCategory"
+            />
+          </label>
+
+          <div class="flex items-center gap-2 justify-end">
+            <button (click)="onCancelCreateCategory()" ubButton variant="secondary" type="button">
+              Отменить
+            </button>
+
+            <button (click)="onConfirmCreateCategory()" ubButton type="button">Добавить</button>
+          </div>
+        </div>
+      }
     </div>
 
     <label class="flex flex-col gap-1">
@@ -79,8 +106,8 @@
   </div>
 
   <div dialogActions class="flex items-center gap-2">
-    <button ubButton variant="secondary" (click)="open.set(false)">Отмена</button>
-    <button ubButton [disabled]="isCreating()" (click)="confirm()">
+    <button ubButton variant="secondary" (click)="closeModal()">Отмена</button>
+    <button ubButton [disabled]="isCreating() || createCategory()" (click)="confirm()">
       {{ isCreating() ? 'Сохранение...' : 'Сохранить' }}
     </button>
   </div>

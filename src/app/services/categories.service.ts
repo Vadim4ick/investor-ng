@@ -34,6 +34,7 @@ export class CategoriesService {
   }
 
   create(dto: CreateCategoryDto): Observable<ApiResponse<Category>> {
+    console.log(dto);
     return this.http.post<ApiResponse<Category>>(this.API, dto);
   }
 
