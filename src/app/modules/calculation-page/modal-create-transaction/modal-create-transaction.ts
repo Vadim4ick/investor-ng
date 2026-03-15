@@ -42,7 +42,7 @@ export class ModalCreateTransaction {
 
   categoryCtrl = new FormControl<string | null>(null, Validators.required);
   descriptionCtrl = new FormControl<string>('', [Validators.required, Validators.minLength(2)]);
-  amountCtrl = new FormControl<string>('', Validators.required);
+  amountCtrl = new FormControl<number | null>(null, Validators.required);
 
   newCategory = new FormControl<string>('', Validators.required);
 
@@ -81,7 +81,7 @@ export class ModalCreateTransaction {
   private fillFormForEdit(transaction: Transaction): void {
     this.categoryCtrl.setValue(String(transaction.category.id), { emitEvent: false });
     this.descriptionCtrl.setValue(transaction.description ?? '', { emitEvent: false });
-    this.amountCtrl.setValue(String(transaction.price ?? ''), { emitEvent: false });
+    this.amountCtrl.setValue(transaction.price ?? null, { emitEvent: false });
 
     this.createErrorMessage.set('');
     this.createCategory.set(false);
@@ -99,7 +99,7 @@ export class ModalCreateTransaction {
   resetForm(): void {
     this.categoryCtrl.reset();
     this.descriptionCtrl.reset('', { emitEvent: false });
-    this.amountCtrl.reset('', { emitEvent: false });
+    this.amountCtrl.reset(null, { emitEvent: false });
     this.newCategory.reset('', { emitEvent: false });
     this.createErrorMessage.set('');
     this.createCategory.set(false);
@@ -155,6 +155,14 @@ export class ModalCreateTransaction {
     this.open.set(false);
   }
 
+  onOpenChange(isOpen: boolean): void {
+    this.open.set(isOpen);
+
+    if (!isOpen) {
+      this.resetForm();
+    }
+  }
+
   confirm(): void {
     this.createErrorMessage.set('');
 
@@ -170,7 +178,7 @@ export class ModalCreateTransaction {
     const payload: CreateTransactionDto = {
       categoryId: Number(this.categoryCtrl.value),
       description: this.descriptionCtrl.value?.trim() ?? '',
-      price: Number(this.amountCtrl.value) ?? 0,
+      price: this.amountCtrl.value ?? 0,
       type: 'INCOME',
     };
 

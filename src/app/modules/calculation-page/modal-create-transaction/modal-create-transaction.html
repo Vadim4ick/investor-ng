@@ -1,6 +1,6 @@
 <app-dialog
   [open]="open()"
-  (openChange)="closeModal()"
+  (openChange)="onOpenChange($event)"
   [title]="mode() === 'edit' ? 'Редактировать операцию' : 'Добавить операцию'"
   [description]="
     mode() === 'edit'
