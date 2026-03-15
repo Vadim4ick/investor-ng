@@ -22,7 +22,7 @@
         <div class="mb-4 flex items-center justify-between">
           <h2 class="text-xl font-semibold">Последние операции</h2>
 
-          <button ubButton type="button" (click)="openModalCreateTransaction()">
+          <button ubButton type="button" (click)="facade.openModalCreateTransaction()">
             Добавить операцию
           </button>
         </div>
@@ -40,20 +40,20 @@
             </thead>
 
             <tbody>
-              @if (isLoading()) {
+              @if (facade.isLoading()) {
                 <tr>
                   <td colspan="5" class="px-2 py-6 text-center text-muted-foreground">
                     Загрузка...
                   </td>
                 </tr>
-              } @else if (!transactions().length) {
+              } @else if (!facade.transactions().length) {
                 <tr>
                   <td colspan="5" class="px-2 py-6 text-center text-muted-foreground">
                     Транзакций пока нет
                   </td>
                 </tr>
               } @else {
-                @for (transaction of transactions(); track transaction.id) {
+                @for (transaction of facade.transactions(); track transaction.id) {
                   <tr class="border-b border-border/70">
                     <td class="px-2 py-3">
                       {{ transaction.createdAt | date: 'dd.MM.yyyy HH:mm' }}
@@ -84,12 +84,12 @@
                           ubButton
                           type="button"
                           variant="outline"
-                          (click)="openModalEditTransaction(transaction)"
+                          (click)="facade.openModalEditTransaction(transaction)"
                         >
                           Изменить
                         </button>
                         <button
-                          (click)="onDeleteTransaction(transaction.id)"
+                          (click)="facade.onDeleteTransaction(transaction.id)"
                           ubButton
                           type="button"
                           variant="destructive"
@@ -104,69 +104,70 @@
             </tbody>
           </table>
 
-          @if (meta() && meta()!.totalPages > 1) {
+          @if (facade.meta() && facade.meta()!.totalPages > 1) {
             <nav ubPagination class="mt-6">
               <ul ubPaginationContent>
                 <li ubPaginationItem>
                   <button
                     ubPaginationPrevious
                     type="button"
-                    [disabled]="!meta()!.hasPrevPage"
-                    (click)="goToPrevPage()"
+                    [disabled]="!facade.meta()!.hasPrevPage"
+                    (click)="facade.goToPrevPage()"
                   ></button>
                 </li>
 
-                @if (visiblePages().length && visiblePages()[0] > 1) {
+                @if (facade.paginationView().pages.length && facade.paginationView().pages[0] > 1) {
                   <li ubPaginationItem>
                     <button
                       ubPaginationLink
                       type="button"
-                      [isActive]="currentPage() === 1"
-                      (click)="goToPage(1)"
+                      [isActive]="facade.currentPage() === 1"
+                      (click)="facade.goToPage(1)"
                     >
                       1
                     </button>
                   </li>
                 }
 
-                @if (showLeftEllipsis()) {
+                @if (facade.paginationView().showLeftEllipsis) {
                   <li ubPaginationItem>
                     <ub-pagination-ellipsis />
                   </li>
                 }
 
-                @for (page of visiblePages(); track page) {
+                @for (page of facade.paginationView().pages; track page) {
                   <li ubPaginationItem>
                     <button
                       ubPaginationLink
                       type="button"
-                      [isActive]="currentPage() === page"
-                      (click)="goToPage(page)"
+                      [isActive]="facade.currentPage() === page"
+                      (click)="facade.goToPage(page)"
                     >
                       {{ page }}
                     </button>
                   </li>
                 }
 
-                @if (showRightEllipsis()) {
+                @if (facade.paginationView().showRightEllipsis) {
                   <li ubPaginationItem>
                     <ub-pagination-ellipsis />
                   </li>
                 }
 
                 @if (
-                  meta() &&
-                  visiblePages().length &&
-                  visiblePages()[visiblePages().length - 1] < meta()!.totalPages
+                  facade.meta() &&
+                  facade.paginationView().pages.length &&
+                  facade.paginationView().pages[facade.paginationView().pages.length - 1] <
+                    facade.meta()!.totalPages
                 ) {
                   <li ubPaginationItem>
                     <button
                       ubPaginationLink
                       type="button"
-                      [isActive]="currentPage() === meta()!.totalPages"
-                      (click)="goToPage(meta()!.totalPages)"
+                      [isActive]="facade.currentPage() === facade.meta()!.totalPages"
+                      (click)="facade.goToPage(facade.meta()!.totalPages)"
                     >
-                      {{ meta()!.totalPages }}
+                      {{ facade.meta()!.totalPages }}
                     </button>
                   </li>
                 }
@@ -175,8 +176,8 @@
                   <button
                     ubPaginationNext
                     type="button"
-                    [disabled]="!meta()!.hasNextPage"
-                    (click)="goToNextPage()"
+                    [disabled]="!facade.meta()!.hasNextPage"
+                    (click)="facade.goToNextPage()"
                   ></button>
                 </li>
               </ul>
@@ -336,13 +337,13 @@
   </app-container>
 
   <modal-create-transaction
-    [(open)]="open"
-    [options]="options()"
-    [mode]="modalMode()"
-    [transactionToEdit]="editingTransaction()"
-    (created)="handleTransactionCreated()"
-    (updated)="handleTransactionUpdated()"
-    (categoryCreated)="onCategoryCreated($event)"
-    (categoryDeleted)="onCategoryDeleted($event)"
+    [(open)]="facade.open"
+    [options]="facade.options()"
+    [mode]="facade.modalMode()"
+    [transactionToEdit]="facade.editingTransaction()"
+    (created)="facade.handleTransactionCreated()"
+    (updated)="facade.handleTransactionUpdated()"
+    (categoryCreated)="facade.onCategoryCreated($event)"
+    (categoryDeleted)="facade.onCategoryDeleted($event)"
   ></modal-create-transaction>
 </section>
