@@ -124,7 +124,6 @@ export class Calculation {
   }
 
   onCategoryCreated(category: { value: string; label: string; userId: number | null }): void {
-    console.log(category);
     this.options.update((prev) => {
       const exists = prev.some((item) => item.value === category.value);
       if (exists) return prev;
@@ -167,6 +166,18 @@ export class Calculation {
     if (!pagination?.hasNextPage) return;
 
     this.goToPage(this.currentPage() + 1);
+  }
+
+  onDeleteTransaction(transactionId: number): void {
+    this.transactionsService.remove(transactionId).subscribe({
+      next: () => {
+        this.clearTransactionsCache();
+        this.loadTransactions();
+      },
+      error: (error) => {
+        console.error('Ошибка удаления транзакции:', error);
+      },
+    });
   }
 
   visiblePages = computed(() => {
