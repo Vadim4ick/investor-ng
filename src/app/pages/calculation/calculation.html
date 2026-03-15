@@ -89,7 +89,7 @@
                           Изменить
                         </button>
                         <button
-                          (click)="facade.onDeleteTransaction(transaction.id)"
+                          (click)="handleTransactionDeleted(transaction.id)"
                           ubButton
                           type="button"
                           variant="destructive"
@@ -298,8 +298,8 @@
     [options]="facade.options()"
     [mode]="facade.modalMode()"
     [transactionToEdit]="facade.editingTransaction()"
-    (created)="facade.handleTransactionCreated()"
-    (updated)="facade.handleTransactionUpdated()"
+    (created)="handleTransactionCreated()"
+    (updated)="handleTransactionUpdated()"
     (categoryCreated)="facade.onCategoryCreated($event)"
     (categoryDeleted)="facade.onCategoryDeleted($event)"
   ></modal-create-transaction>

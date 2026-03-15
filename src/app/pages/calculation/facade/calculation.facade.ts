@@ -110,11 +110,12 @@ export class CalculationFacade {
     this.goToPage(this.currentPage() + 1);
   }
 
-  onDeleteTransaction(transactionId: number): void {
+  onDeleteTransaction(transactionId: number, options?: { onSuccess?: () => void }): void {
     this.transactionsService.remove(transactionId).subscribe({
       next: () => {
         this.cache.clear();
-        this.loadTransactions();
+        this.loadTransactions(this.currentPage(), true);
+        options?.onSuccess?.();
       },
       error: (error) => {
         console.error('Ошибка удаления транзакции:', error);

@@ -17,6 +17,7 @@ import { CalculationFacade } from './facade/calculation.facade';
 import { TransactionsCacheService } from '@/shared/cache/transactions-cache.service';
 import { formatAmount, isIncome } from '@/shared/lib/utils';
 import { SummaryFacade } from './facade/summary.facade';
+import { Transaction } from '@/shared/types/transactions.types';
 
 @Component({
   selector: 'calculation',
@@ -47,5 +48,21 @@ export class Calculation {
   ngOnInit(): void {
     this.facade.init();
     this.summaryFacade.init();
+  }
+
+  handleTransactionCreated(): void {
+    this.facade.handleTransactionCreated();
+    this.summaryFacade.loadSummary();
+  }
+
+  handleTransactionUpdated(): void {
+    this.facade.handleTransactionUpdated();
+    this.summaryFacade.loadSummary();
+  }
+
+  handleTransactionDeleted(transactionId: number): void {
+    this.facade.onDeleteTransaction(transactionId, {
+      onSuccess: () => this.summaryFacade.loadSummary(),
+    });
   }
 }
