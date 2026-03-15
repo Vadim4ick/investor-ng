@@ -25,6 +25,9 @@ export class ModalCreateTransaction {
 
   created = output<void>();
 
+  categoryCreated = output<{ value: string; label: string; userId: number | null }>();
+  categoryDeleted = output<string>(); // id категории
+
   private readonly transactionsService = inject(TransactionsService);
   private readonly categoriesService = inject(CategoriesService);
 
@@ -70,19 +73,42 @@ export class ModalCreateTransaction {
     this.createCategory.set(false);
   }
 
-  deleteCategory(categoryId: string) {
+  deleteCategory(categoryId: string): void {
     this.categoriesService.remove(Number(categoryId)).subscribe({
-      next: () => {},
+      next: () => {
+        this.categoryDeleted.emit(categoryId);
+
+        if (this.categoryCtrl.value === categoryId) {
+          this.categoryCtrl.reset();
+        }
+      },
       error: (error) => {
         console.error('Ошибка удаления категории:', error);
       },
     });
   }
 
-  onConfirmCreateCategory() {
-    console.log(this.newCategory.value);
-    this.categoriesService.create({ name: this.newCategory.value ?? '' }).subscribe({
-      next: () => {
+  onConfirmCreateCategory(): void {
+    this.newCategory.markAsTouched();
+
+    if (this.newCategory.invalid) {
+      return;
+    }
+
+    const name = this.newCategory.value?.trim() ?? '';
+
+    if (!name) return;
+
+    this.categoriesService.create({ name }).subscribe({
+      next: (response) => {
+        const category = response.data;
+
+        this.categoryCreated.emit({
+          value: String(category.id),
+          label: category.name,
+          userId: category.userId,
+        });
+
         this.createCategory.set(false);
         this.newCategory.reset('', { emitEvent: false });
       },

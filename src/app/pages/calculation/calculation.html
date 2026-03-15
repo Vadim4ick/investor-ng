@@ -325,5 +325,7 @@
     [(open)]="open"
     [options]="options()"
     (created)="handleTransactionCreated()"
+    (categoryCreated)="onCategoryCreated($event)"
+    (categoryDeleted)="onCategoryDeleted($event)"
   ></modal-create-transaction>
 </section>

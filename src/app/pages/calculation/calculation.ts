@@ -123,6 +123,20 @@ export class Calculation {
     });
   }
 
+  onCategoryCreated(category: { value: string; label: string; userId: number | null }): void {
+    console.log(category);
+    this.options.update((prev) => {
+      const exists = prev.some((item) => item.value === category.value);
+      if (exists) return prev;
+
+      return [...prev, category].sort((a, b) => Number(a.value) - Number(b.value));
+    });
+  }
+
+  onCategoryDeleted(categoryId: string): void {
+    this.options.update((prev) => prev.filter((item) => item.value !== categoryId));
+  }
+
   isIncome(type: TransactionTypeVariant): boolean {
     return type === 'INCOME';
   }
