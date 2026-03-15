@@ -1,8 +1,12 @@
 <app-dialog
   [open]="open()"
   (openChange)="closeModal()"
-  title="Добавить операцию"
-  description="Укажите название операции, ее категорию и сумму."
+  [title]="mode() === 'edit' ? 'Редактировать операцию' : 'Добавить операцию'"
+  [description]="
+    mode() === 'edit'
+      ? 'Измените категорию, описание и сумму операции.'
+      : 'Укажите название операции, ее категорию и сумму.'
+  "
   size="md"
 >
   <div class="flex flex-col gap-4">
@@ -108,7 +112,15 @@
   <div dialogActions class="flex items-center gap-2">
     <button ubButton variant="secondary" (click)="closeModal()">Отмена</button>
     <button ubButton [disabled]="isCreating() || createCategory()" (click)="confirm()">
-      {{ isCreating() ? 'Сохранение...' : 'Сохранить' }}
+      {{
+        isCreating()
+          ? mode() === 'edit'
+            ? 'Сохранение...'
+            : 'Создание...'
+          : mode() === 'edit'
+            ? 'Сохранить изменения'
+            : 'Сохранить'
+      }}
     </button>
   </div>
 </app-dialog>

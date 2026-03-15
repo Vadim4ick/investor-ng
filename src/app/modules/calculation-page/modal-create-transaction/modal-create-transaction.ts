@@ -3,7 +3,7 @@ import { Dialog } from '@/shared/ui/dialog/dialog';
 import { UbInputDirective } from '@/shared/ui/input';
 import { UbMoneyInputDirective } from '@/shared/ui/ub-money-input';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
-import { CreateTransactionDto } from '@/shared/types/transactions.types';
+import { CreateTransactionDto, Transaction } from '@/shared/types/transactions.types';
 import { TransactionsService } from '@/services/transactions.service';
 import { UbButtonDirective } from '@/shared/ui/button';
 import { CategoriesService } from '@/services/categories.service';
@@ -24,6 +24,11 @@ export class ModalCreateTransaction {
   options = input.required<{ value: string; label: string; userId: number | null }[]>();
 
   created = output<void>();
+
+  mode = input<'create' | 'edit'>('create');
+  transactionToEdit = input<Transaction | null>(null);
+
+  updated = output<void>();
 
   categoryCreated = output<{ value: string; label: string; userId: number | null }>();
   categoryDeleted = output<string>(); // id категории
@@ -55,6 +60,32 @@ export class ModalCreateTransaction {
         this.categoryCtrl.enable({ emitEvent: false });
       }
     });
+
+    effect(() => {
+      const isOpen = this.open();
+      const mode = this.mode();
+      const transaction = this.transactionToEdit();
+
+      if (!isOpen) return;
+
+      if (mode === 'edit' && transaction) {
+        this.fillFormForEdit(transaction);
+      }
+
+      if (mode === 'create' && !transaction) {
+        this.resetForm();
+      }
+    });
+  }
+
+  private fillFormForEdit(transaction: Transaction): void {
+    this.categoryCtrl.setValue(String(transaction.category.id), { emitEvent: false });
+    this.descriptionCtrl.setValue(transaction.description ?? '', { emitEvent: false });
+    this.amountCtrl.setValue(String(transaction.price ?? ''), { emitEvent: false });
+
+    this.createErrorMessage.set('');
+    this.createCategory.set(false);
+    this.newCategory.reset('', { emitEvent: false });
   }
 
   onCreateCategory() {
@@ -65,10 +96,11 @@ export class ModalCreateTransaction {
     this.createCategory.set(false);
   }
 
-  resetCreateForm(): void {
+  resetForm(): void {
     this.categoryCtrl.reset();
     this.descriptionCtrl.reset('', { emitEvent: false });
     this.amountCtrl.reset('', { emitEvent: false });
+    this.newCategory.reset('', { emitEvent: false });
     this.createErrorMessage.set('');
     this.createCategory.set(false);
   }
@@ -119,7 +151,7 @@ export class ModalCreateTransaction {
   }
 
   closeModal(): void {
-    this.resetCreateForm();
+    this.resetForm();
     this.open.set(false);
   }
 
@@ -142,18 +174,49 @@ export class ModalCreateTransaction {
       type: 'INCOME',
     };
 
+    if (this.mode() === 'edit') {
+      this.updateTransaction(payload);
+      return;
+    }
+
+    this.createTransaction(payload);
+  }
+
+  private createTransaction(payload: CreateTransactionDto): void {
     this.isCreating.set(true);
 
     this.transactionsService.create(payload).subscribe({
       next: () => {
         this.isCreating.set(false);
-        this.resetCreateForm();
+        this.resetForm();
         this.open.set(false);
         this.created.emit();
       },
       error: (error) => {
         console.error('Ошибка создания транзакции:', error);
         this.createErrorMessage.set('Не удалось сохранить операцию');
+        this.isCreating.set(false);
+      },
+    });
+  }
+
+  private updateTransaction(payload: CreateTransactionDto): void {
+    const transaction = this.transactionToEdit();
+
+    if (!transaction) return;
+
+    this.isCreating.set(true);
+
+    this.transactionsService.update(transaction.id, payload).subscribe({
+      next: () => {
+        this.isCreating.set(false);
+        this.resetForm();
+        this.open.set(false);
+        this.updated.emit();
+      },
+      error: (error) => {
+        console.error('Ошибка обновления транзакции:', error);
+        this.createErrorMessage.set('Не удалось обновить операцию');
         this.isCreating.set(false);
       },
     });

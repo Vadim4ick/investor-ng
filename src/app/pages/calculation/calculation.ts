@@ -54,6 +54,9 @@ export class Calculation {
 
   options = signal<{ value: string; label: string; userId: number | null }[]>([]);
 
+  editingTransaction = signal<Transaction | null>(null);
+  modalMode = signal<'create' | 'edit'>('create');
+
   isLoading = signal(false);
   transactions = signal<Transaction[]>([]);
   errorMessage = signal('');
@@ -221,7 +224,20 @@ export class Calculation {
     this.loadTransactions(1, true);
   }
 
-  openModalCreateTransaction() {
+  handleTransactionUpdated(): void {
+    this.clearTransactionsCache();
+    this.loadTransactions(this.currentPage(), true);
+  }
+
+  openModalEditTransaction(transaction: Transaction): void {
+    this.modalMode.set('edit');
+    this.editingTransaction.set(transaction);
+    this.open.set(true);
+  }
+
+  openModalCreateTransaction(): void {
+    this.modalMode.set('create');
+    this.editingTransaction.set(null);
     this.open.set(true);
   }
 }

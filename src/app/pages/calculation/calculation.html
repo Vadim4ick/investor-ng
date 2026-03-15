@@ -80,7 +80,14 @@
 
                     <td class="px-2 py-3">
                       <div class="flex items-center justify-end gap-2">
-                        <button ubButton type="button" variant="outline">Изменить</button>
+                        <button
+                          ubButton
+                          type="button"
+                          variant="outline"
+                          (click)="openModalEditTransaction(transaction)"
+                        >
+                          Изменить
+                        </button>
                         <button
                           (click)="onDeleteTransaction(transaction.id)"
                           ubButton
@@ -331,7 +338,10 @@
   <modal-create-transaction
     [(open)]="open"
     [options]="options()"
+    [mode]="modalMode()"
+    [transactionToEdit]="editingTransaction()"
     (created)="handleTransactionCreated()"
+    (updated)="handleTransactionUpdated()"
     (categoryCreated)="onCategoryCreated($event)"
     (categoryDeleted)="onCategoryDeleted($event)"
   ></modal-create-transaction>
