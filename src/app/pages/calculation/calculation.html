@@ -60,7 +60,7 @@
                     </td>
 
                     <td class="px-2 py-3">
-                      {{ transaction.category.name }}
+                      {{ transaction.category ? transaction.category.name : 'Без категории' }}
                     </td>
 
                     <td class="px-2 py-3">

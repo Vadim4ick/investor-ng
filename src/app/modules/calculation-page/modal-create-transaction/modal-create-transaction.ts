@@ -3,10 +3,15 @@ import { Dialog } from '@/shared/ui/dialog/dialog';
 import { UbInputDirective } from '@/shared/ui/input';
 import { UbMoneyInputDirective } from '@/shared/ui/ub-money-input';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
-import { CreateTransactionDto, Transaction } from '@/shared/types/transactions.types';
+import {
+  CreateTransactionDto,
+  Transaction,
+  TransactionTypeVariant,
+} from '@/shared/types/transactions.types';
 import { TransactionsService } from '@/services/transactions.service';
 import { UbButtonDirective } from '@/shared/ui/button';
 import { CategoriesService } from '@/services/categories.service';
+import { CustomSelectComponent } from '@/shared/ui/select/select';
 
 @Component({
   selector: 'modal-create-transaction',
@@ -16,6 +21,7 @@ import { CategoriesService } from '@/services/categories.service';
     UbMoneyInputDirective,
     ReactiveFormsModule,
     UbButtonDirective,
+    CustomSelectComponent,
   ],
   templateUrl: './modal-create-transaction.html',
 })
@@ -30,6 +36,11 @@ export class ModalCreateTransaction {
 
   updated = output<void>();
 
+  VARIANTS_TYPE: { value: TransactionTypeVariant; label: string }[] = [
+    { value: 'INCOME', label: 'Доход' },
+    { value: 'EXPENDITURE', label: 'Расход' },
+  ];
+
   categoryCreated = output<{ value: string; label: string; userId: number | null }>();
   categoryDeleted = output<string>(); // id категории
 
@@ -41,6 +52,7 @@ export class ModalCreateTransaction {
   createCategory = signal(false);
 
   categoryCtrl = new FormControl<string | null>(null, Validators.required);
+  type = new FormControl<TransactionTypeVariant>('INCOME', Validators.required);
   descriptionCtrl = new FormControl<string>('', [Validators.required, Validators.minLength(2)]);
   amountCtrl = new FormControl<number | null>(null, Validators.required);
 
@@ -103,6 +115,7 @@ export class ModalCreateTransaction {
     this.newCategory.reset('', { emitEvent: false });
     this.createErrorMessage.set('');
     this.createCategory.set(false);
+    this.type.reset('INCOME', { emitEvent: false });
   }
 
   deleteCategory(categoryId: string): void {
@@ -179,7 +192,7 @@ export class ModalCreateTransaction {
       categoryId: Number(this.categoryCtrl.value),
       description: this.descriptionCtrl.value?.trim() ?? '',
       price: this.amountCtrl.value ?? 0,
-      type: 'INCOME',
+      type: this.type.value ?? 'INCOME',
     };
 
     if (this.mode() === 'edit') {

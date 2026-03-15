@@ -10,14 +10,6 @@
   size="md"
 >
   <div class="flex flex-col gap-4">
-    <!-- <app-select
-        [options]="options()"
-        placeholder="Выберите категорию"
-        label="Категория"
-        [searchable]="false"
-        [formControl]="categoryCtrl"
-      ></app-select> -->
-
     <div class="flex flex-col gap-2">
       <span class="text-sm font-medium">Категория</span>
 
@@ -78,6 +70,14 @@
         </div>
       }
     </div>
+
+    <app-select
+      [options]="VARIANTS_TYPE"
+      placeholder="Выберите тип транзакции"
+      label="Тип транзакции"
+      [searchable]="false"
+      [formControl]="type"
+    ></app-select>
 
     <label class="flex flex-col gap-1">
       <span class="text-sm font-medium">Описание</span>
