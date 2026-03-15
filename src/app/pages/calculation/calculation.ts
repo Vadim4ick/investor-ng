@@ -16,6 +16,7 @@ import { ModalCreateTransaction } from '@/modules/calculation-page';
 import { CalculationFacade } from './facade/calculation.facade';
 import { TransactionsCacheService } from '@/shared/cache/transactions-cache.service';
 import { formatAmount, isIncome } from '@/shared/lib/utils';
+import { SummaryFacade } from './facade/summary.facade';
 
 @Component({
   selector: 'calculation',
@@ -34,15 +35,17 @@ import { formatAmount, isIncome } from '@/shared/lib/utils';
     ModalCreateTransaction,
   ],
   templateUrl: './calculation.html',
-  providers: [CalculationFacade, TransactionsCacheService],
+  providers: [CalculationFacade, SummaryFacade, TransactionsCacheService],
 })
 export class Calculation {
   readonly facade = inject(CalculationFacade);
+  readonly summaryFacade = inject(SummaryFacade);
 
   readonly formatAmount = formatAmount;
   readonly isIncome = isIncome;
 
   ngOnInit(): void {
     this.facade.init();
+    this.summaryFacade.init();
   }
 }

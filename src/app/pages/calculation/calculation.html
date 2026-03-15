@@ -194,40 +194,22 @@
               <span
                 class="rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-medium text-emerald-600 dark:text-emerald-300"
               >
-                +131 500 ₽
+                + {{ formatAmount(summaryFacade.totals().income) }} ₽
               </span>
             </div>
 
             <div class="grid gap-4 sm:grid-cols-2">
-              <label class="flex flex-col gap-2">
-                <span class="text-sm font-medium">Зарплата</span>
-                <input
-                  [disabled]="true"
-                  type="number"
-                  value="110000"
-                  class="h-11 w-full rounded-xl border border-border bg-background px-4 text-sm outline-none"
-                />
-              </label>
-
-              <label class="flex flex-col gap-2">
-                <span class="text-sm font-medium">Фриланс</span>
-                <input
-                  [disabled]="true"
-                  type="number"
-                  value="15000"
-                  class="h-11 w-full rounded-xl border border-border bg-background px-4 text-sm outline-none"
-                />
-              </label>
-
-              <label class="flex flex-col gap-2 sm:col-span-2">
-                <span class="text-sm font-medium">Прочие доходы</span>
-                <input
-                  [disabled]="true"
-                  type="number"
-                  value="6500"
-                  class="h-11 w-full rounded-xl border border-border bg-background px-4 text-sm outline-none"
-                />
-              </label>
+              @for (t of summaryFacade.summary()?.incomeByCategory; track t.categoryId) {
+                <label class="flex flex-col gap-2">
+                  <span class="text-sm font-medium">{{ t.categoryName }}</span>
+                  <input
+                    [disabled]="true"
+                    type="text"
+                    [value]="`${formatAmount(t.amount)} ₽`"
+                    class="h-11 w-full rounded-xl border border-border bg-background px-4 text-sm outline-none"
+                  />
+                </label>
+              }
             </div>
           </div>
 
@@ -237,60 +219,22 @@
               <span
                 class="rounded-full bg-rose-500/10 px-3 py-1 text-xs font-medium text-rose-600 dark:text-rose-300"
               >
-                -78 800 ₽
+                - {{ formatAmount(summaryFacade.totals().expense) }} ₽
               </span>
             </div>
 
             <div class="grid gap-4 sm:grid-cols-2">
-              <label class="flex flex-col gap-2">
-                <span class="text-sm font-medium">Жилье</span>
-                <input
-                  [disabled]="true"
-                  type="number"
-                  value="32000"
-                  class="h-11 w-full rounded-xl border border-border bg-background px-4 text-sm outline-none"
-                />
-              </label>
-
-              <label class="flex flex-col gap-2">
-                <span class="text-sm font-medium">Еда</span>
-                <input
-                  [disabled]="true"
-                  type="number"
-                  value="18000"
-                  class="h-11 w-full rounded-xl border border-border bg-background px-4 text-sm outline-none"
-                />
-              </label>
-
-              <label class="flex flex-col gap-2">
-                <span class="text-sm font-medium">Транспорт</span>
-                <input
-                  [disabled]="true"
-                  type="number"
-                  value="6200"
-                  class="h-11 w-full rounded-xl border border-border bg-background px-4 text-sm outline-none"
-                />
-              </label>
-
-              <label class="flex flex-col gap-2">
-                <span class="text-sm font-medium">Развлечения</span>
-                <input
-                  [disabled]="true"
-                  type="number"
-                  value="8400"
-                  class="h-11 w-full rounded-xl border border-border bg-background px-4 text-sm outline-none"
-                />
-              </label>
-
-              <label class="flex flex-col gap-2 sm:col-span-2">
-                <span class="text-sm font-medium">Подписки и сервисы</span>
-                <input
-                  [disabled]="true"
-                  type="number"
-                  value="14200"
-                  class="h-11 w-full rounded-xl border border-border bg-background px-4 text-sm outline-none"
-                />
-              </label>
+              @for (t of summaryFacade.summary()?.expenseByCategory; track t.categoryId) {
+                <label class="flex flex-col gap-2">
+                  <span class="text-sm font-medium">{{ t.categoryName }}</span>
+                  <input
+                    [disabled]="true"
+                    type="text"
+                    [value]="`${formatAmount(t.amount)} ₽`"
+                    class="h-11 w-full rounded-xl border border-border bg-background px-4 text-sm outline-none"
+                  />
+                </label>
+              }
             </div>
           </div>
         </div>
@@ -301,16 +245,29 @@
             <div class="mt-4 space-y-3 text-sm">
               <div class="flex items-center justify-between">
                 <span class="text-muted-foreground">Доходы</span>
-                <span class="font-semibold text-emerald-600 dark:text-emerald-300">131 500 ₽</span>
+                <span class="font-semibold text-emerald-600 dark:text-emerald-300"
+                  >{{ formatAmount(summaryFacade.totals().income) }} ₽</span
+                >
               </div>
               <div class="flex items-center justify-between">
                 <span class="text-muted-foreground">Расходы</span>
-                <span class="font-semibold text-rose-600 dark:text-rose-300">78 800 ₽</span>
+                <span class="font-semibold text-rose-600 dark:text-rose-300"
+                  >{{ formatAmount(summaryFacade.totals().expense) }} ₽</span
+                >
               </div>
               <div class="h-px bg-border"></div>
               <div class="flex items-center justify-between text-base">
                 <span class="font-medium">Остаток</span>
-                <span class="font-bold text-primary">52 700 ₽</span>
+                <span
+                  [class]="
+                    `font-bold ${
+                      summaryFacade.totals().balance < 0
+                        ? 'text-rose-600 dark:text-rose-300'
+                        : 'text-emerald-600 dark:text-emerald-300'
+                    }`
+                  "
+                  >{{ formatAmount(summaryFacade.totals().balance) }} ₽</span
+                >
               </div>
             </div>
           </div>
@@ -318,7 +275,7 @@
           <div class="rounded-2xl border border-border bg-card p-5 md:p-6">
             <div class="flex items-center justify-between">
               <h3 class="text-base font-semibold">Накопления</h3>
-              <span class="text-sm font-medium">40%</span>
+              <span class="text-sm font-medium">{{ summaryFacade.totals().savingsPercent }}%</span>
             </div>
 
             <div class="mt-4">

@@ -5,6 +5,8 @@ import { EMPTY, Observable } from 'rxjs';
 import { ApiResponse, PaginatedResponse } from '@/shared/types/api.types';
 import {
   CreateTransactionDto,
+  GetSummaryQueryDto,
+  GetSummaryResponse,
   Transaction,
   UpdateTransactionDto,
 } from '@/shared/types/transactions.types';
@@ -30,6 +32,16 @@ export class TransactionsService {
     }
 
     return this.http.get<PaginatedResponse<Transaction>>(this.API, { params: { page, limit } });
+  }
+
+  getSummary(dto: GetSummaryQueryDto) {
+    if (!isPlatformBrowser(this.platformId)) {
+      return EMPTY;
+    }
+
+    return this.http.get<ApiResponse<GetSummaryResponse>>(`${this.API}/summary`, {
+      params: { ...dto },
+    });
   }
 
   getById(id: number): Observable<Transaction> {
